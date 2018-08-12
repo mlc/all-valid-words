@@ -2,11 +2,11 @@
   "plugins": [
     [
       "transform-runtime",
-    {
-      "polyfill": false,
-      "regenerator": true
-    }
+      {
+        "polyfill": false,
+        "regenerator": true
+      }
     ]
   ],
-  "presets": ["es2015", "stage-0"]
+  "presets": [["env", { "targets": { "node": "8.10" } }]]
 }

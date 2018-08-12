@@ -19,25 +19,23 @@ service: service-name
 
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: nodejs8.10
   # If you want to change to a different AWS profile
   # from ~/.aws/credentials, you can do so here
   profile: default
   # you can overwrite defaults here
   #  stage: dev
-  #  region: us-east-1
+  region: us-east-1
 
 custom:
   webpackIncludeModules: true
 
-
-
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+iamRoleStatements:
+  - Effect: "Allow"
+    Action:
+      - "s3:GetObject"
+    Resource: "arn:aws:s3:::gutenberg-data.oulipo.link/*"
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -62,7 +60,7 @@ custom:
 
 functions:
   hello:
-    handler: src/hello.default
+    handler: src/post.default
     events:
       - http:
           path: hello
@@ -103,4 +101,3 @@ functions:
 plugins:
   - serverless-webpack
   - serverless-offline
-
