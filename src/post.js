@@ -9,6 +9,8 @@ const s3 = new AWS.S3();
 
 const bucket = 'gutenberg-data.oulipo.link';
 const metadataFile = 'gutenberg-metadata.json.gz';
+const pubbucket = 'words.oulipo.link';
+const postsFile = 'posts.json';
 
 const spaces = /[\p{White_Space}]+/gu;
 const maxIters = 50;
@@ -27,6 +29,19 @@ const metadata = memoize(() =>
       )
     )
 );
+
+const getOldPosts = () =>
+  s3
+    .getObject({ Bucket: pubbucket, Key: postsFile })
+    .promise()
+    .then(({ Body }) => JSON.parse(Body))
+    .catch(e => {
+      if (e.code === 'NoSuchKey') {
+        return [];
+      } else {
+        throw e;
+      }
+    });
 
 export const findRandomBook = async () => {
   const gutenberg = await metadata();
@@ -75,10 +90,34 @@ export const codeForLang = lang => {
   return undefined;
 };
 
+const savePosts = posts =>
+  s3
+    .putObject({
+      Body: JSON.stringify(posts),
+      Bucket: pubbucket,
+      Key: postsFile,
+      ContentType: 'application/json',
+      CacheControl: 'public',
+      Expires: new Date(Number(new Date()) + 4 * 3600 * 1000),
+    })
+    .promise();
+
 const doit = async () => {
-  const { text, Language } = await findRandomBook();
+  const [{ text, Author, Language, Num, Title }, oldPosts] = await Promise.all([
+    findRandomBook(),
+    getOldPosts(),
+  ]);
   const snippet = await findPhrasing(text);
-  console.log(await post(snippet, codeForLang(Language)));
+  const status = await post(snippet, codeForLang(Language));
+  const newPost = {
+    url: status.url,
+    post: snippet,
+    book: Title,
+    bookId: Num,
+    author: Author,
+  };
+  console.log(newPost);
+  return savePosts([newPost, ...oldPosts]);
 };
 
 const fun = (event, context, callback) => {
