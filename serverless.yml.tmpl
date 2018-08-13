@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: service-name
+service: all-words
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -47,8 +47,6 @@ iamRoleStatements:
 #            - "Ref" : "ServerlessDeploymentBucket"
 
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
 
 # you can add packaging information here
 #package:
@@ -67,6 +65,8 @@ functions:
       - schedule:
           rate: rate(4 hours)
           enabled: true
+    environment:
+      ACCESS_TOKEN: XXXXXX
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

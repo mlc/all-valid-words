@@ -6,7 +6,8 @@
         "polyfill": false,
         "regenerator": true
       }
-    ]
+    ],
+    "transform-unicode-property-regex"
   ],
-  "presets": [["env", { "targets": { "node": "8.10" } }]]
+  "presets": [["env", { "targets": { "node": "8.10" } }], "stage-0"]
 }
