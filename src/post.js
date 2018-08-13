@@ -77,7 +77,7 @@ const post = (status, language) =>
     },
     body: {
       status,
-      visibility: 'direct',
+      visibility: 'public',
       language,
     },
   });
