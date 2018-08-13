@@ -4,6 +4,7 @@ import iso639 from 'iso-639-2';
 import randomNumber from 'random-number-csprng';
 import rp from 'request-promise-native';
 import { ungzip } from 'node-gzip';
+import weightedRandomObject from 'weighted-random-object';
 
 const s3 = new AWS.S3();
 
@@ -53,18 +54,18 @@ export const findRandomBook = async () => {
   return { ...file, text };
 };
 
-const findPhrasing = async text => {
-  const snippet = / ([^EeÈÉÊËèéêëĒēĔĕĖėĘęĚěƐȄȅȆȇȨȩɛεϵЄЕеєҽԐԑعᎬᗴᘍᘓᥱᴱᵉᵋḘḙḚḛẸẹẺẻẼẽₑℇ℮ℯℰⅇ∈ⒺⓔⲈⲉⴹ㋍㋎ꗋꜪꜫﻉＥｅ𝈡𝐄𝐞𝐸𝑒𝑬𝒆𝓔𝓮𝔈𝔢𝔼𝕖𝕰𝖊𝖤𝖾𝗘𝗲𝘌𝘦𝙀𝙚𝙴𝚎🄴]{30,}) /giu;
-  let i;
-  for (i = 0; i < maxIters; ++i) {
-    const startPos = await randomNumber(0, text.length - 1);
-    snippet.lastIndex = startPos;
-    const match = snippet.exec(text);
-    if (match) {
-      return match[1];
-    }
+const findPhrasing = text => {
+  const snippet = / [^EeÈÉÊËèéêëĒēĔĕĖėĘęĚěƐȄȅȆȇȨȩɛεϵЄЕеєҽԐԑعᎬᗴᘍᘓᥱᴱᵉᵋḘḙḚḛẸẹẺẻẼẽₑℇ℮ℯℰⅇ∈ⒺⓔⲈⲉⴹ㋍㋎ꗋꜪꜫﻉＥｅ𝈡𝐄𝐞𝐸𝑒𝑬𝒆𝓔𝓮𝔈𝔢𝔼𝕖𝕰𝖊𝖤𝖾𝗘𝗲𝘌𝘦𝙀𝙚𝙴𝚎🄴]{30,490} /giu;
+  const matches = text.match(snippet).map(m => {
+    const str = m.trim();
+    const len = str.length;
+    return { str, weight: len * len };
+  });
+  if (matches.length === 0) {
+    throw new Error("couldn't find valid phrasing");
   }
-  throw new Error("couldn't find valid phrasing");
+  const r = weightedRandomObject(matches);
+  return r.str;
 };
 
 const post = (status, language) =>
