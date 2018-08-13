@@ -1,10 +1,11 @@
 import AWS from 'aws-sdk';
 import memoize from 'lodash/memoize';
-import iso639 from 'iso-639-2';
 import randomNumber from 'random-number-csprng';
 import rp from 'request-promise-native';
 import { ungzip } from 'node-gzip';
 import weightedRandomObject from 'weighted-random-object';
+
+import langs from './langs';
 
 const s3 = new AWS.S3();
 
@@ -83,12 +84,11 @@ const post = (status, language) =>
     },
   });
 
-export const codeForLang = lang => {
-  const l = iso639.find(({ name }) => name === lang);
-  if (l && l.iso6392B) {
-    return l.iso6392B;
+export const codeForLang = languages => {
+  if (languages.length !== 1) {
+    return undefined;
   }
-  return undefined;
+  return langs[languages[0]];
 };
 
 const savePosts = posts =>
@@ -108,14 +108,16 @@ const doit = async () => {
     findRandomBook(),
     getOldPosts(),
   ]);
-  const snippet = await findPhrasing(text);
-  const status = await post(snippet, codeForLang(Language));
+  const snippet = findPhrasing(text);
+  const lang = codeForLang(Language);
+  const status = await post(snippet, lang);
   const newPost = {
     url: status.url,
     post: snippet,
     book: Title,
     bookId: Num,
     author: Author,
+    lang,
   };
   console.log(newPost);
   return savePosts([newPost, ...oldPosts]);
