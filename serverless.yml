@@ -26,16 +26,17 @@ provider:
   # you can overwrite defaults here
   #  stage: dev
   region: us-east-1
+  memorySize: 1024
 
 custom:
   webpackIncludeModules: true
 
 # you can add statements to the Lambda function's IAM Role here
 iamRoleStatements:
-  - Effect: "Allow"
+  - Effect: 'Allow'
     Action:
-      - "s3:GetObject"
-    Resource: "arn:aws:s3:::gutenberg-data.oulipo.link/*"
+      - 's3:GetObject'
+    Resource: 'arn:aws:s3:::gutenberg-data.oulipo.link/*'
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -62,12 +63,9 @@ functions:
   hello:
     handler: src/post.default
     events:
-      - http:
-          path: hello
-          method: get
       # Ping every 5 minutes to avoid cold starts
       - schedule:
-          rate: rate(5 minutes)
+          rate: rate(4 hours)
           enabled: true
 
 #    The following are a few example events you can configure
