@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <title>all valid wor(l)ds</title>
@@ -18,6 +18,10 @@
     ul li { padding-bottom: 12px; }
     .dat { font-size: 14px; }
   </style>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
   <h1>all valid wor(l)ds</h1>
@@ -27,34 +31,39 @@
 
   <h2>past posts</h2>
   <p id="loading">Loading…</p>
-</body>
 <script type="text/javascript">
 const a = (url, text) => {
   const elt = document.createElement('a');
   elt.textContent = text;
   elt.setAttribute('href', url);
   return elt;
-}
-const t = (text) => document.createTextNode(text);
+};
+const t = text => document.createTextNode(text);
 
-fetch('/posts.json').then(r => r.json()).then(posts => {
-  const ul = document.createElement('ul');
-  posts.forEach(p => {
-    const outer = document.createElement("li");
-    outer.appendChild(t('“'));
-    outer.appendChild(a(p.url, p.post));
-    outer.appendChild(t('”'));
-    outer.appendChild(document.createElement("br"));
-    const span = document.createElement('span');
-    span.className = 'dat';
-    span.appendChild(t('from '));
-    span.appendChild(a('https://www.gutenberg.org/ebooks/' + p.bookId, p.book));
-    span.appendChild(t(' by ' + p.author));
-    outer.appendChild(span);
-    ul.appendChild(outer);
-  });
-  const loading = document.getElementById('loading');
-  loading.parentNode.replaceChild(ul, loading);
-}).catch(e => console.error(e))
+fetch('/posts.json')
+  .then(r => r.json())
+  .then(posts => {
+    const ul = document.createElement('ul');
+    posts.forEach(p => {
+      const outer = document.createElement('li');
+      outer.appendChild(t('“'));
+      outer.appendChild(a(p.url, p.post));
+      outer.appendChild(t('”'));
+      outer.appendChild(document.createElement('br'));
+      const span = document.createElement('span');
+      span.className = 'dat';
+      span.appendChild(t('from '));
+      span.appendChild(
+        a('https://www.gutenberg.org/ebooks/' + p.bookId, p.book)
+      );
+      span.appendChild(t(' by ' + p.author));
+      outer.appendChild(span);
+      ul.appendChild(outer);
+    });
+    const loading = document.getElementById('loading');
+    loading.parentNode.replaceChild(ul, loading);
+  })
+  .catch(e => console.error(e));
 </script>
+</body>
 </html>
