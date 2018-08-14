@@ -46,6 +46,9 @@ fetch('/posts.json')
     const ul = document.createElement('ul');
     posts.forEach(p => {
       const outer = document.createElement('li');
+      if (p.lang) {
+        outer.setAttribute('lang', p.lang);
+      }
       outer.appendChild(t('“'));
       outer.appendChild(a(p.url, p.post));
       outer.appendChild(t('”'));
