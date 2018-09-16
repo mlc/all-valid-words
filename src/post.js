@@ -16,6 +16,7 @@ const postsFile = 'posts.json';
 
 const spaces = /[\p{White_Space}]+/gu;
 const maxIters = 50;
+const PUBLIC_ODDS = 6;
 
 const metadata = memoize(() =>
   s3
@@ -69,7 +70,12 @@ const findPhrasing = text => {
   return r.str;
 };
 
-const post = (status, language) =>
+const pickVisibility = async () => {
+  const n = await randomNumber(0, PUBLIC_ODDS - 1);
+  return n === 0 ? 'public' : 'unlisted';
+};
+
+const post = (status, language, visibility) =>
   rp({
     uri: 'https://oulipo.social/api/v1/statuses',
     method: 'POST',
@@ -79,7 +85,7 @@ const post = (status, language) =>
     },
     body: {
       status,
-      visibility: 'public',
+      visibility,
       language,
     },
   });
@@ -104,13 +110,14 @@ const savePosts = posts =>
     .promise();
 
 const doit = async () => {
-  const [{ text, Author, Language, Num, Title }, oldPosts] = await Promise.all([
-    findRandomBook(),
-    getOldPosts(),
-  ]);
+  const [
+    { text, Author, Language, Num, Title },
+    oldPosts,
+    visibility,
+  ] = await Promise.all([findRandomBook(), getOldPosts(), pickVisibility()]);
   const snippet = findPhrasing(text);
   const lang = codeForLang(Language);
-  const status = await post(snippet, lang);
+  const status = await post(snippet, lang, visibility);
   const newPost = {
     url: status.url,
     post: snippet,
