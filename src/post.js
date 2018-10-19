@@ -1,10 +1,12 @@
 import AWS from 'aws-sdk';
+import { randomBytes } from 'crypto';
 import { convert, ZonedDateTime, ZoneId } from 'js-joda';
 import memoize from 'lodash/memoize';
+import { ungzip } from 'node-gzip';
 import randomNumber from 'random-number-csprng';
 import rp from 'request-promise-native';
-import { ungzip } from 'node-gzip';
 import weightedRandomObject from 'weighted-random-object';
+import { promisify } from 'util';
 
 import langs from './langs';
 
@@ -71,23 +73,47 @@ const findPhrasing = text => {
   return r.str;
 };
 
+const pRandomBytes = promisify(randomBytes);
+
+const makeNonce = () => pRandomBytes(32).then(buf => buf.toString('hex'));
+
+const hanzi = /\p{Script=Han}/u;
+const cyrl = /\p{Script=Cyrillic}/u;
+const hangul = /\p{Script=Hangul}/u;
+const greek = /\p{Script=Greek}/u;
+
+const warning = text => {
+  if (hanzi.test(text)) {
+    return 'hanzi';
+  } else if (cyrl.test(text)) {
+    return 'cyrillic';
+  } else if (hangul.test(text)) {
+    return 'hangul';
+  } else if (greek.test(text)) {
+    return 'doric';
+  }
+  return undefined;
+};
+
 const pickVisibility = async () => {
   const n = await randomNumber(0, PUBLIC_ODDS - 1);
   return n === 0 ? 'public' : 'unlisted';
 };
 
-const post = (status, language, visibility) =>
+const post = (status, nonce, language, visibility, cw) =>
   rp({
     uri: 'https://oulipo.social/api/v1/statuses',
     method: 'POST',
     json: true,
     headers: {
       Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+      'Idempotency-Key': nonce,
     },
     body: {
       status,
       visibility,
       language,
+      spoiler_text: cw,
     },
   });
 
@@ -115,10 +141,16 @@ const doit = async () => {
     { text, Author, Language, Num, Title },
     oldPosts,
     visibility,
-  ] = await Promise.all([findRandomBook(), getOldPosts(), pickVisibility()]);
+    nonce,
+  ] = await Promise.all([
+    findRandomBook(),
+    getOldPosts(),
+    pickVisibility(),
+    makeNonce(),
+  ]);
   const snippet = findPhrasing(text);
   const lang = codeForLang(Language);
-  const status = await post(snippet, lang, visibility);
+  const status = await post(snippet, nonce, lang, visibility, warning(snippet));
   const newPost = {
     url: status.url,
     post: snippet,
