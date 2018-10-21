@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "bootstrap": "./scripts/bootstrap.sh",
+    "deploy:dev": "export NODE_ENV=dev && yarn deploy:env",
     "deploy:env": "sls deploy --stage $NODE_ENV",
-    "deploy": "export NODE_ENV=dev && yarn deploy:env",
     "deploy:production": "export NODE_ENV=production && yarn deploy:env",
     "deploy:stage": "export NODE_ENV=stage && yarn deploy:env",
     "lint": "eslint ./src",
