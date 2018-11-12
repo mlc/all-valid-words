@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { convert, ZonedDateTime, ZoneId } from 'js-joda';
 import memoize from 'lodash/memoize';
 import randomNumber from 'random-number-csprng';
 import rp from 'request-promise-native';
@@ -105,7 +106,7 @@ const savePosts = posts =>
       Key: postsFile,
       ContentType: 'application/json',
       CacheControl: 'public',
-      Expires: new Date(Number(new Date()) + 4 * 3600 * 1000),
+      Expires: convert(ZonedDateTime.now(ZoneId.UTC).plusHours(4)).toDate(),
     })
     .promise();
 

@@ -45,6 +45,7 @@
   "dependencies": {
     "aws-sdk": "^2.291.0",
     "babel-runtime": "^6.22.0",
+    "js-joda": "^1.9.2",
     "lodash": "^4.17.10",
     "node-gzip": "^1.1.2",
     "random-number-csprng": "^1.0.2",
