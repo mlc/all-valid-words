@@ -1,13 +1,21 @@
 {
   "plugins": [
     [
-      "transform-runtime",
+      "@babel/plugin-transform-runtime",
       {
-        "polyfill": false,
         "regenerator": true
       }
     ],
-    "transform-unicode-property-regex"
+    "@babel/plugin-proposal-unicode-property-regex"
   ],
-  "presets": [["env", { "targets": { "node": "8.10" } }], "stage-0"]
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "8.10"
+        }
+      }
+    ]
+  ]
 }
