@@ -54,7 +54,7 @@ export const findRandomBook = async () => {
     .getObject({ Bucket: bucket, Key: file['gd-path'] })
     .promise()
     .then(({ Body }) => Body.toString().replace(spaces, ' '));
-  return { ...file, text };
+  return Object.assign({}, file, { text });
 };
 
 const findPhrasing = text => {
