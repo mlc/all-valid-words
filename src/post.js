@@ -51,9 +51,10 @@ export const findRandomBook = async () => {
   const gutenberg = await metadata();
   const file = gutenberg[await randomNumber(0, gutenberg.length - 1)];
   const text = await s3
-    .getObject({ Bucket: bucket, Key: file['gd-path'] })
+    .getObject({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
     .promise()
-    .then(({ Body }) => Body.toString().replace(spaces, ' '));
+    .then(({ Body }) => ungzip(Body))
+    .then(book => book.toString().replace(spaces, ' '));
   return Object.assign({}, file, { text });
 };
 
