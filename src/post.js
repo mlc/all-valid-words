@@ -18,7 +18,6 @@ const pubbucket = 'words.oulipo.link';
 const postsFile = 'posts.json';
 
 const spaces = /[\p{White_Space}]+/gu;
-const maxIters = 50;
 const PUBLIC_ODDS = 6;
 
 const metadata = memoize(() =>
@@ -44,9 +43,8 @@ const getOldPosts = () =>
     .catch(e => {
       if (e.code === 'NoSuchKey') {
         return [];
-      } else {
-        throw e;
       }
+      throw e;
     });
 
 export const findRandomBook = async () => {
@@ -85,11 +83,14 @@ const greek = /\p{Script=Greek}/u;
 const warning = text => {
   if (hanzi.test(text)) {
     return 'hanzi';
-  } else if (cyrl.test(text)) {
+  }
+  if (cyrl.test(text)) {
     return 'cyrillic';
-  } else if (hangul.test(text)) {
+  }
+  if (hangul.test(text)) {
     return 'hangul';
-  } else if (greek.test(text)) {
+  }
+  if (greek.test(text)) {
     return 'doric';
   }
   return undefined;
@@ -159,7 +160,7 @@ const doit = async () => {
     author: Author,
     lang,
   };
-  console.log(newPost);
+  console.log(newPost); // eslint-disable-line no-console
   return savePosts([newPost, ...oldPosts]);
 };
 
