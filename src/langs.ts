@@ -1,4 +1,4 @@
-const langs = {
+const langs: { [lang: string]: string } = {
   Afrikaans: 'af',
   Aleut: 'ale',
   Arabic: 'ar',

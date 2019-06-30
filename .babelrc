@@ -16,6 +16,7 @@
           "node": "8.10"
         }
       }
-    ]
+    ],
+    "@babel/preset-typescript"
   ]
 }

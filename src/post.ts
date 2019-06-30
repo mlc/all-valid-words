@@ -10,6 +10,39 @@ import { promisify } from 'util';
 
 import langs from './langs';
 
+interface GutenbergBook {
+  Author: Array<string>;
+  'Author Birth': Array<string>;
+  'Author Given': Array<string>;
+  'Author Death': Array<string>;
+  'Author Surname': Array<string>;
+  'Copyright Status': Array<string>;
+  Language: Array<string>;
+  'LoC Class': Array<string>;
+  Num: string;
+  Subject: Array<string>;
+  Title: Array<string>;
+  charset: string;
+  'gd-num-padded': string;
+  'gd-path': string;
+  href: string;
+}
+
+interface GutenbergBookWithText extends GutenbergBook {
+  text: string;
+}
+
+interface PostData {
+  url: string;
+  post: string;
+  book: Array<string>;
+  bookId: string;
+  author: Array<string>;
+  lang?: string;
+}
+
+type MastoVisibility = 'public' | 'unlisted' | 'private' | 'direct';
+
 const s3 = new AWS.S3();
 
 const bucket = 'gutenberg-data.oulipo.link';
@@ -20,26 +53,27 @@ const postsFile = 'posts.json';
 const spaces = /[\p{White_Space}]+/gu;
 const PUBLIC_ODDS = 6;
 
-const metadata = memoize(() =>
-  s3
-    .getObject({ Bucket: bucket, Key: metadataFile })
-    .promise()
-    .then(({ Body }) => ungzip(Body))
-    .then(data => JSON.parse(data))
-    .then(data =>
-      data.filter(
-        ({ 'Copyright Status': [cs] }) =>
-          cs === 'Not copyrighted in the United States.' ||
-          cs === 'Public domain in the USA.'
+const metadata = memoize(
+  (): Promise<Array<GutenbergBook>> =>
+    s3
+      .getObject({ Bucket: bucket, Key: metadataFile })
+      .promise()
+      .then(({ Body }) => ungzip(Body as Buffer))
+      .then(data => JSON.parse(data.toString()) as Array<GutenbergBook>)
+      .then(data =>
+        data.filter(
+          ({ 'Copyright Status': [cs] }) =>
+            cs === 'Not copyrighted in the United States.' ||
+            cs === 'Public domain in the USA.'
+        )
       )
-    )
 );
 
-const getOldPosts = () =>
+const getOldPosts = (): Promise<ReadonlyArray<PostData>> =>
   s3
     .getObject({ Bucket: pubbucket, Key: postsFile })
     .promise()
-    .then(({ Body }) => JSON.parse(Body))
+    .then(({ Body }) => JSON.parse((Body as Buffer).toString()))
     .catch(e => {
       if (e.code === 'NoSuchKey') {
         return [];
@@ -47,20 +81,24 @@ const getOldPosts = () =>
       throw e;
     });
 
-export const findRandomBook = async () => {
+export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
   const gutenberg = await metadata();
   const file = gutenberg[await randomNumber(0, gutenberg.length - 1)];
   const text = await s3
     .getObject({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
     .promise()
-    .then(({ Body }) => ungzip(Body))
+    .then(({ Body }) => ungzip(Body as Buffer))
     .then(book => book.toString().replace(spaces, ' '));
   return Object.assign({}, file, { text });
 };
 
-const findPhrasing = text => {
+const findPhrasing = (text: string): string => {
   const snippet = / [^EeÈÉÊËèéêëĒēĔĕĖėĘęĚěƐȄȅȆȇȨȩɛεϵЄЕеєҽԐԑعᎬᗴᘍᘓᥱᴱᵉᵋḘḙḚḛẸẹẺẻẼẽₑℇ℮ℯℰⅇ∈ⒺⓔⲈⲉⴹ㋍㋎ꗋꜪꜫﻉＥｅ𝈡𝐄𝐞𝐸𝑒𝑬𝒆𝓔𝓮𝔈𝔢𝔼𝕖𝕰𝖊𝖤𝖾𝗘𝗲𝘌𝘦𝙀𝙚𝙴𝚎🄴æœ]{30,490} /giu;
-  const matches = text.match(snippet).map(m => {
+  const rawMatches = text.match(snippet);
+  if (rawMatches === null) {
+    throw new Error('no matches!');
+  }
+  const matches = rawMatches.map(m => {
     const str = m.trim();
     const len = str.length;
     return { str, weight: len * len };
@@ -74,14 +112,15 @@ const findPhrasing = text => {
 
 const pRandomBytes = promisify(randomBytes);
 
-const makeNonce = () => pRandomBytes(32).then(buf => buf.toString('hex'));
+const makeNonce = (): Promise<string> =>
+  pRandomBytes(32).then(buf => buf.toString('hex'));
 
 const hanzi = /\p{Script=Han}/u;
 const cyrl = /\p{Script=Cyrillic}/u;
 const hangul = /\p{Script=Hangul}/u;
 const greek = /\p{Script=Greek}/u;
 
-const warning = text => {
+const warning = (text: string): string | undefined => {
   if (hanzi.test(text)) {
     return 'hanzi';
   }
@@ -97,12 +136,18 @@ const warning = text => {
   return undefined;
 };
 
-const pickVisibility = async () => {
+const pickVisibility = async (): Promise<MastoVisibility> => {
   const n = await randomNumber(0, PUBLIC_ODDS - 1);
   return n === 0 ? 'public' : 'unlisted';
 };
 
-const post = (status, nonce, language, visibility, cw) =>
+const post = (
+  status: string,
+  nonce: string | undefined,
+  language: string | undefined,
+  visibility: MastoVisibility | undefined,
+  cw: string | undefined
+) =>
   rp({
     uri: 'https://oulipo.social/api/v1/statuses',
     method: 'POST',
@@ -115,18 +160,20 @@ const post = (status, nonce, language, visibility, cw) =>
       status,
       visibility,
       language,
-      spoiler_text: cw,
+      spoiler_text: cw, // eslint-disable-line @typescript-eslint/camelcase
     },
   });
 
-export const codeForLang = languages => {
+export const codeForLang = (
+  languages: ReadonlyArray<string>
+): string | undefined => {
   if (languages.length !== 1) {
     return undefined;
   }
   return langs[languages[0]];
 };
 
-const savePosts = posts =>
+const savePosts = (posts: ReadonlyArray<PostData>) =>
   s3
     .putObject({
       Body: JSON.stringify(posts),
@@ -138,7 +185,7 @@ const savePosts = posts =>
     })
     .promise();
 
-const doit = async () => {
+const doit: AWSLambda.ScheduledHandler = async () => {
   const [
     { text, Author, Language, Num, Title },
     oldPosts,
@@ -161,12 +208,8 @@ const doit = async () => {
     author: Author,
     lang,
   };
-  console.log(newPost); // eslint-disable-line no-console
-  return savePosts([newPost, ...oldPosts]);
+  console.log(newPost);
+  await savePosts([newPost, ...oldPosts]);
 };
 
-const fun = (event, context, callback) => {
-  doit().then(() => callback(null, { message: 'OK' }), e => callback(e));
-};
-
-export default fun;
+export default doit;
