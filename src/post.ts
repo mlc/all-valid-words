@@ -10,7 +10,7 @@ import { promisify } from 'util';
 
 import langs from './langs';
 
-interface GutenbergBook {
+export interface GutenbergBook {
   Author: Array<string>;
   'Author Birth': Array<string>;
   'Author Given': Array<string>;
@@ -28,7 +28,7 @@ interface GutenbergBook {
   href: string;
 }
 
-interface GutenbergBookWithText extends GutenbergBook {
+export interface GutenbergBookWithText extends GutenbergBook {
   text: string;
 }
 
@@ -53,7 +53,7 @@ const postsFile = 'posts.json';
 const spaces = /[\p{White_Space}]+/gu;
 const PUBLIC_ODDS = 6;
 
-const metadata = memoize(
+export const metadata = memoize(
   (): Promise<Array<GutenbergBook>> =>
     s3
       .getObject({ Bucket: bucket, Key: metadataFile })
@@ -81,9 +81,9 @@ const getOldPosts = (): Promise<ReadonlyArray<PostData>> =>
       throw e;
     });
 
-export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
-  const gutenberg = await metadata();
-  const file = gutenberg[await randomNumber(0, gutenberg.length - 1)];
+export const findBook = async (
+  file: GutenbergBook
+): Promise<GutenbergBookWithText> => {
   const text = await s3
     .getObject({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
     .promise()
@@ -92,13 +92,19 @@ export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
   return Object.assign({}, file, { text });
 };
 
+export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
+  const gutenberg = await metadata();
+  const file = gutenberg[await randomNumber(0, gutenberg.length - 1)];
+  return findBook(file);
+};
+
+const allValidSymbols = / [^EeÈÉÊËèéêëĒēĔĕĖėĘęĚěƐȄȅȆȇȨȩɛεϵЄЕеєҽԐԑعᎬᗴᘍᘓᥱᴱᵉᵋḘḙḚḛẸẹẺẻẼẽₑℇ℮ℯℰⅇ∈ⒺⓔⲈⲉⴹ㋍㋎ꗋꜪꜫﻉＥｅ𝈡𝐄𝐞𝐸𝑒𝑬𝒆𝓔𝓮𝔈𝔢𝔼𝕖𝕰𝖊𝖤𝖾𝗘𝗲𝘌𝘦𝙀𝙚𝙴𝚎🄴æœ]{30,490} /giu;
+
+export const findPhrasings = (text: string): ReadonlyArray<string> =>
+  text.match(allValidSymbols) || [];
+
 const findPhrasing = (text: string): string => {
-  const snippet = / [^EeÈÉÊËèéêëĒēĔĕĖėĘęĚěƐȄȅȆȇȨȩɛεϵЄЕеєҽԐԑعᎬᗴᘍᘓᥱᴱᵉᵋḘḙḚḛẸẹẺẻẼẽₑℇ℮ℯℰⅇ∈ⒺⓔⲈⲉⴹ㋍㋎ꗋꜪꜫﻉＥｅ𝈡𝐄𝐞𝐸𝑒𝑬𝒆𝓔𝓮𝔈𝔢𝔼𝕖𝕰𝖊𝖤𝖾𝗘𝗲𝘌𝘦𝙀𝙚𝙴𝚎🄴æœ]{30,490} /giu;
-  const rawMatches = text.match(snippet);
-  if (rawMatches === null) {
-    throw new Error('no matches!');
-  }
-  const matches = rawMatches.map(m => {
+  const matches = findPhrasings(text).map(m => {
     const str = m.trim();
     const len = str.length;
     return { str, weight: len * len };

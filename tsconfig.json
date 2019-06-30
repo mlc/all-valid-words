@@ -4,7 +4,8 @@
     "target": "es6",
     "lib": ["es6"],
     "strict": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "composite": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
