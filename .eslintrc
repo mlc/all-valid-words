@@ -9,7 +9,8 @@
   "rules": {
     "no-console": "off",
     "@typescript-eslint/array-type": "generic",
-    "@typescript-eslint/explicit-function-return-type": "off"
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "import/prefer-default-export": "off"
   },
   "settings": {
     "import/resolver": {

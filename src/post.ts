@@ -53,20 +53,19 @@ const postsFile = 'posts.json';
 const spaces = /[\p{White_Space}]+/gu;
 const PUBLIC_ODDS = 6;
 
-export const metadata = memoize(
-  (): Promise<Array<GutenbergBook>> =>
-    s3
-      .getObject({ Bucket: bucket, Key: metadataFile })
-      .promise()
-      .then(({ Body }) => ungzip(Body as Buffer))
-      .then(data => JSON.parse(data.toString()) as Array<GutenbergBook>)
-      .then(data =>
-        data.filter(
-          ({ 'Copyright Status': [cs] }) =>
-            cs === 'Not copyrighted in the United States.' ||
-            cs === 'Public domain in the USA.'
-        )
+export const metadata: () => Promise<Array<GutenbergBook>> = memoize(() =>
+  s3
+    .getObject({ Bucket: bucket, Key: metadataFile })
+    .promise()
+    .then(({ Body }) => ungzip(Body as Buffer))
+    .then(data => JSON.parse(data.toString()) as Array<GutenbergBook>)
+    .then(data =>
+      data.filter(
+        ({ 'Copyright Status': [cs] }) =>
+          cs === 'Not copyrighted in the United States.' ||
+          cs === 'Public domain in the USA.'
       )
+    )
 );
 
 const getOldPosts = (): Promise<ReadonlyArray<PostData>> =>

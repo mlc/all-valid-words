@@ -43,7 +43,7 @@
     "husky": "^0.14.3",
     "prettier": "^1.15.3",
     "pretty-quick": "^1.8.0",
-    "serverless": "^1.5.1",
+    "serverless": "^1.46.1",
     "serverless-offline": "^3.16.0",
     "serverless-webpack": "^4.2.0",
     "typescript": "^3.5.2",
@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "aws-sdk": "^2.291.0",
+    "aws-sdk": "^2.485.0",
     "js-joda": "^1.9.2",
     "lodash": "^4.17.10",
     "node-gzip": "^1.1.2",
