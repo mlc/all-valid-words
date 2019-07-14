@@ -29,6 +29,7 @@
     "@types/aws-lambda": "^8.10.27",
     "@types/lodash": "^4.14.135",
     "@types/node": "^12.0.10",
+    "@types/node-gzip": "^1.1.0",
     "@types/request-promise-native": "^1.0.16",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
