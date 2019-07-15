@@ -6,8 +6,9 @@ module.exports = {
   entry: slsw.lib.entries,
   target: 'node',
   externals: [nodeExternals()],
+  mode: 'production',
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.(ts|js)$/,
         loaders: ['babel-loader'],
