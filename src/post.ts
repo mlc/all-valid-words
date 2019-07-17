@@ -111,8 +111,7 @@ const findPhrasing = (text: string): string => {
   if (matches.length === 0) {
     throw new Error("couldn't find valid phrasing");
   }
-  const r = weightedRandomObject(matches);
-  return r.str;
+  return weightedRandomObject(matches).str;
 };
 
 const pRandomBytes = promisify(randomBytes);

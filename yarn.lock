@@ -748,6 +748,11 @@
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-2.3.5.tgz#9da44ed75571999b65c37b60c9b2b88db54c585d"
   integrity sha512-SCcK7mvGi3+ZNz833RRjFIxrn4gI1PPR3NtuIS+6vMkvmsGjosqTJwRt5bAEFLRz+wtJMWv8+uOnZf2hi2QXTg==
 
+"@types/weighted-random-object@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/weighted-random-object/-/weighted-random-object-1.0.0.tgz#5a5dac5a9cdbd40dcf4ed9f3d405fa61a5601bba"
+  integrity sha512-ezpY4RF5FaXYotXuxIcAY5S4W94ygRyB575vf+FnVba3mg9x+QM+Po4Ajo5OCLd3bYh4ulDKpNxboT0D4SrJIA==
+
 "@typescript-eslint/eslint-plugin@^1.11.0":
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-1.11.0.tgz#870f752c520db04db6d3668af7479026a6f2fb9a"
