@@ -39,6 +39,7 @@ interface PostData {
   bookId: string;
   author: Array<string>;
   lang?: string;
+  ts?: string;
 }
 
 type MastoVisibility = 'public' | 'unlisted' | 'private' | 'direct';
@@ -204,12 +205,13 @@ const doit: AWSLambda.ScheduledHandler = async () => {
   const snippet = findPhrasing(text);
   const lang = codeForLang(Language);
   const status = await post(snippet, nonce, lang, visibility, warning(snippet));
-  const newPost = {
+  const newPost: PostData = {
     url: status.url,
     post: snippet,
     book: Title,
     bookId: Num,
     author: Author,
+    ts: status.created_at,
     lang,
   };
   console.log(newPost);
