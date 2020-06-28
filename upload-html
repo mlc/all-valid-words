@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -ex
+
+aws s3 cp index.html s3://words.oulipo.link/index.html --cache-control 'public,max-age=86400' --content-language 'en-US' --content-type 'text/html;charset=utf-8'
+aws cloudfront create-invalidation --distribution-id E3NY7VRACZU7ZT --paths '/' '/index.html'
