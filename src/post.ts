@@ -2,9 +2,9 @@ import AWS from 'aws-sdk';
 import { randomBytes } from 'crypto';
 import { convert, ZonedDateTime, ZoneId } from 'js-joda';
 import memoize from 'lodash/memoize';
+import fetch from 'node-fetch';
 import { ungzip } from 'node-gzip';
 import randomNumber from 'random-number-csprng';
-import rp from 'request-promise-native';
 import weightedRandomObject from 'weighted-random-object';
 import { promisify } from 'util';
 
@@ -33,7 +33,7 @@ export interface GutenbergBookWithText extends GutenbergBook {
 }
 
 interface PostData {
-  url: string;
+  url: string | null;
   post: string;
   book: Array<string>;
   bookId: string;
@@ -43,6 +43,26 @@ interface PostData {
 }
 
 type MastoVisibility = 'public' | 'unlisted' | 'private' | 'direct';
+
+interface MastoStatus {
+  id: string;
+  uri: string;
+  created_at: string;
+  account: unknown;
+  content: string;
+  visibility: MastoVisibility;
+  sensitive: boolean;
+  spoiler_text: string;
+  media_attachments: Array<unknown>;
+  application: unknown;
+  reblogs_count: number;
+  favourites_count: number;
+  replies_count: number;
+  url: string | null;
+  in_reply_to_id: string | null;
+  in_reply_to_account_id: string | null;
+  reblog: MastoStatus | null;
+}
 
 const s3 = new AWS.S3();
 
@@ -148,26 +168,25 @@ const pickVisibility = async (): Promise<MastoVisibility> => {
 
 const post = (
   status: string,
-  nonce: string | undefined,
+  nonce: string,
   language: string | undefined,
   visibility: MastoVisibility | undefined,
   cw: string | undefined
-) =>
-  rp({
-    uri: 'https://oulipo.social/api/v1/statuses',
-    method: 'POST',
-    json: true,
-    headers: {
-      Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-      'Idempotency-Key': nonce,
-    },
-    body: {
+): Promise<MastoStatus> =>
+  fetch('https://oulipo.social/api/v1/statuses', {
+    method: 'post',
+    body: JSON.stringify({
       status,
       visibility,
       language,
       spoiler_text: cw, // eslint-disable-line @typescript-eslint/camelcase
+    }),
+    headers: {
+      Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': nonce,
     },
-  });
+  }).then(r => r.json() as Promise<any>);
 
 export const codeForLang = (
   languages: ReadonlyArray<string>
