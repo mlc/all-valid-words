@@ -4,11 +4,11 @@ import { convert, ZonedDateTime, ZoneId } from 'js-joda';
 import memoize from 'lodash/memoize';
 import fetch from 'node-fetch';
 import { ungzip } from 'node-gzip';
-import randomNumber from 'random-number-csprng';
 import weightedRandomObject from 'weighted-random-object';
 import { promisify } from 'util';
 
 import langs from './langs';
+import randomNumber from './random-number';
 
 export interface GutenbergBook {
   Author: Array<string>;
@@ -114,7 +114,7 @@ export const findBook = async (
 
 export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
   const gutenberg = await metadata();
-  const file = gutenberg[await randomNumber(0, gutenberg.length - 1)];
+  const file = gutenberg[await randomNumber(gutenberg.length - 1)];
   return findBook(file);
 };
 
@@ -162,7 +162,7 @@ const warning = (text: string): string | undefined => {
 };
 
 const pickVisibility = async (): Promise<MastoVisibility> => {
-  const n = await randomNumber(0, PUBLIC_ODDS - 1);
+  const n = await randomNumber(PUBLIC_ODDS - 1);
   return n === 0 ? 'public' : 'unlisted';
 };
 
