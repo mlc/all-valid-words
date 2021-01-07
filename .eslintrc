@@ -8,9 +8,12 @@
   ],
   "rules": {
     "no-console": "off",
-    "@typescript-eslint/array-type": "generic",
+    "@typescript-eslint/array-type": ["error", {
+      "default": "generic"
+    }],
     "@typescript-eslint/explicit-function-return-type": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "import/extensions": "off",
   },
   "settings": {
     "import/resolver": {

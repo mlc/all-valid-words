@@ -10,7 +10,7 @@ const randomInt = async (): Promise<number> => {
   return buf.readUIntLE(0, 6);
 };
 
-export const randomNumber = async (max: number) => {
+export const randomNumber = async (max: number): Promise<number> => {
   if (max <= 0 || max >= MAX_U48 || !Number.isInteger(max)) {
     throw new Error('invalid max');
   }

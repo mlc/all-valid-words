@@ -6,6 +6,7 @@ import { ungzip } from 'node-gzip';
 import weightedRandomObject from 'weighted-random-object';
 
 import langs from './langs';
+import { MastoStatus, MastoVisibility } from './mastodon';
 import { randomNumber, pRandomBytes } from './random-number';
 
 export interface GutenbergBook {
@@ -38,28 +39,6 @@ interface PostData {
   author: Array<string>;
   lang?: string;
   ts?: string;
-}
-
-type MastoVisibility = 'public' | 'unlisted' | 'private' | 'direct';
-
-interface MastoStatus {
-  id: string;
-  uri: string;
-  created_at: string;
-  account: unknown;
-  content: string;
-  visibility: MastoVisibility;
-  sensitive: boolean;
-  spoiler_text: string;
-  media_attachments: Array<unknown>;
-  application: unknown;
-  reblogs_count: number;
-  favourites_count: number;
-  replies_count: number;
-  url: string | null;
-  in_reply_to_id: string | null;
-  in_reply_to_account_id: string | null;
-  reblog: MastoStatus | null;
 }
 
 const s3 = new AWS.S3();
@@ -107,7 +86,7 @@ export const findBook = async (
     .promise()
     .then(({ Body }) => ungzip(Body as Buffer))
     .then(book => book.toString().replace(spaces, ' '));
-  return Object.assign({}, file, { text });
+  return { ...file, text };
 };
 
 export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
@@ -175,14 +154,14 @@ const post = (
       status,
       visibility,
       language,
-      spoiler_text: cw, // eslint-disable-line @typescript-eslint/camelcase
+      spoiler_text: cw,
     }),
     headers: {
       Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
       'Content-Type': 'application/json',
       'Idempotency-Key': nonce,
     },
-  }).then(r => r.json() as Promise<any>);
+  }).then(r => r.json() as Promise<MastoStatus>);
 
 export const codeForLang = (
   languages: ReadonlyArray<string>
