@@ -7,7 +7,7 @@ import weightedRandomObject from 'weighted-random-object';
 
 import langs from './langs';
 import { MastoStatus, MastoVisibility } from './mastodon';
-import { randomNumber, pRandomBytes } from './random-number';
+import { pRandomBytes, randomNumber } from './random-number';
 
 export interface GutenbergBook {
   Author: Array<string>;
