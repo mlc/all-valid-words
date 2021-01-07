@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 import { promisify } from 'util';
 
-const pRandomBytes = promisify(randomBytes);
+export const pRandomBytes = promisify(randomBytes);
 
 const MAX_U48 = 2 ** 48;
 
@@ -10,7 +10,7 @@ const randomInt = async (): Promise<number> => {
   return buf.readUIntLE(0, 6);
 };
 
-const randomNumber = async (max: number) => {
+export const randomNumber = async (max: number) => {
   if (max <= 0 || max >= MAX_U48 || !Number.isInteger(max)) {
     throw new Error('invalid max');
   }
@@ -24,5 +24,3 @@ const randomNumber = async (max: number) => {
 
   return n % max;
 };
-
-export default randomNumber;

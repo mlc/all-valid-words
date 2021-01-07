@@ -1,14 +1,12 @@
 import AWS from 'aws-sdk';
-import { randomBytes } from 'crypto';
 import { convert, ZonedDateTime, ZoneId } from 'js-joda';
 import memoize from 'lodash/memoize';
 import fetch from 'node-fetch';
 import { ungzip } from 'node-gzip';
 import weightedRandomObject from 'weighted-random-object';
-import { promisify } from 'util';
 
 import langs from './langs';
-import randomNumber from './random-number';
+import { randomNumber, pRandomBytes } from './random-number';
 
 export interface GutenbergBook {
   Author: Array<string>;
@@ -134,8 +132,6 @@ const findPhrasing = (text: string): string => {
   }
   return weightedRandomObject(matches).str;
 };
-
-const pRandomBytes = promisify(randomBytes);
 
 const makeNonce = (): Promise<string> =>
   pRandomBytes(32).then(buf => buf.toString('hex'));
