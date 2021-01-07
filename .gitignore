@@ -4,5 +4,4 @@ node_modules
 .serverless
 .env*
 yarn-error.log
-serverless.yml
 tsconfig.tsbuildinfo

@@ -52,7 +52,10 @@ provider:
         Fn::GetAtt: StatsTable.Arn
 
 custom:
-  webpackIncludeModules: true
+  webpack:
+    includeModules:
+      forceExclude:
+        - aws-sdk
 
 functions:
   hello:
@@ -62,7 +65,7 @@ functions:
           rate: rate(4 hours)
           enabled: true
     environment:
-      ACCESS_TOKEN: XXXXXX
+      ACCESS_TOKEN: '{{resolve:secretsmanager:all-words/mastodon-api}}'
   statsEnqueuer:
     timeout: 600
     handler: src/stats.enqueuer
@@ -79,7 +82,7 @@ functions:
           arn:
             Fn::GetAtt: FanOutQueue.Arn
           batchSize: 5
-          enabled: true
+          enabled: false
 
 resources:
   Resources:
