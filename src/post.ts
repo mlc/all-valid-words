@@ -1,10 +1,12 @@
 import AWS from 'aws-sdk';
-import { convert, ZonedDateTime, ZoneId } from 'js-joda';
+import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
 import memoize from 'lodash/memoize';
 import fetch from 'node-fetch';
 import { ungzip } from 'node-gzip';
 import weightedRandomObject from 'weighted-random-object';
 
+import { getFileName } from './date';
+import fixCache from './fix-cache';
 import langs from './langs';
 import { MastoStatus, MastoVisibility } from './mastodon';
 import { pRandomBytes, randomNumber } from './random-number';
@@ -46,7 +48,6 @@ const s3 = new AWS.S3();
 const bucket = 'gutenberg-data.oulipo.link';
 const metadataFile = 'gutenberg-metadata.json.gz';
 const pubbucket = 'words.oulipo.link';
-const postsFile = 'posts.json';
 
 const spaces = /[\p{White_Space}]+/gu;
 const PUBLIC_ODDS = 6;
@@ -66,14 +67,16 @@ export const metadata: () => Promise<Array<GutenbergBook>> = memoize(() =>
     )
 );
 
-const getOldPosts = (): Promise<ReadonlyArray<PostData>> =>
+const getOldPosts = (time: string): Promise<ReadonlyArray<PostData>> =>
   s3
-    .getObject({ Bucket: pubbucket, Key: postsFile })
+    .getObject({ Bucket: pubbucket, Key: getFileName(time) })
     .promise()
     .then(({ Body }) => JSON.parse((Body as Buffer).toString()))
     .catch(e => {
       if (e.code === 'NoSuchKey') {
-        return [];
+        return fixCache(pubbucket, time)
+          .catch(console.warn)
+          .then(() => []);
       }
       throw e;
     });
@@ -181,19 +184,19 @@ export const codeForLang = (
   return langs[languages[0]];
 };
 
-const savePosts = (posts: ReadonlyArray<PostData>) =>
+const savePosts = (time: string, posts: ReadonlyArray<PostData>) =>
   s3
     .putObject({
       Body: JSON.stringify(posts),
       Bucket: pubbucket,
-      Key: postsFile,
+      Key: getFileName(time),
       ContentType: 'application/json',
       CacheControl: 'public',
       Expires: convert(ZonedDateTime.now(ZoneId.UTC).plusHours(4)).toDate(),
     })
     .promise();
 
-const doit: AWSLambda.ScheduledHandler = async () => {
+const doit: AWSLambda.ScheduledHandler = async ({ time }) => {
   const [
     { text, Author, Language, Num, Title },
     oldPosts,
@@ -201,7 +204,7 @@ const doit: AWSLambda.ScheduledHandler = async () => {
     nonce,
   ] = await Promise.all([
     findRandomBook(),
-    getOldPosts(),
+    getOldPosts(time),
     pickVisibility(),
     makeNonce(),
   ]);
@@ -218,7 +221,7 @@ const doit: AWSLambda.ScheduledHandler = async () => {
     lang,
   };
   console.log(newPost);
-  await savePosts([newPost, ...oldPosts]);
+  await savePosts(time, [newPost, ...oldPosts]);
 };
 
 export default doit;

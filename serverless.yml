@@ -20,11 +20,7 @@ service: all-words
 provider:
   name: aws
   runtime: nodejs12.x
-  # If you want to change to a different AWS profile
-  # from ~/.aws/credentials, you can do so here
   profile: default
-  # you can overwrite defaults here
-  #  stage: dev
   region: us-east-1
   memorySize: 1024
   iamRoleStatements:
@@ -36,7 +32,11 @@ provider:
       Action:
         - 's3:GetObject'
         - 's3:PutObject'
-      Resource: 'arn:aws:s3:::words.oulipo.link/posts.json'
+      Resource: 'arn:aws:s3:::words.oulipo.link/posts/*'
+    - Effect: 'Allow'
+      Action:
+        - 's3:ListBucket'
+      Resource: 'arn:aws:s3:::words.oulipo.link'
     - Effect: 'Allow'
       Action:
         - 'sqs:SendMessage'
