@@ -1,15 +1,17 @@
 import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
 import memoize from 'lodash/memoize';
-import fetch from 'node-fetch';
-import { ungzip } from 'node-gzip';
+import { promisify } from 'util';
 import weightedRandomObject from 'weighted-random-object';
+import * as zlib from 'zlib';
 
 import { getFileName } from './date';
 import fixCache from './fix-cache';
 import { codeForLang } from './langs';
-import { MastoStatus, MastoVisibility } from './mastodon';
+import { MastoVisibility, post } from './mastodon';
 import { pRandomBytes, randomNumber } from './random-number';
 import s3 from './s3';
+
+const gunzip = promisify<zlib.InputType, Buffer>(zlib.gunzip);
 
 export interface GutenbergBook {
   Author: Array<string>;
@@ -54,7 +56,7 @@ export const metadata: () => Promise<Array<GutenbergBook>> = memoize(() =>
   s3
     .getObject({ Bucket: bucket, Key: metadataFile })
     .promise()
-    .then(({ Body }) => ungzip(Body as Buffer))
+    .then(({ Body }) => gunzip(Body as Buffer))
     .then(data => JSON.parse(data.toString()) as Array<GutenbergBook>)
     .then(data =>
       data.filter(
@@ -71,7 +73,7 @@ const getOldPosts = (time: string): Promise<ReadonlyArray<PostData>> =>
     .promise()
     .then(({ Body }) => JSON.parse((Body as Buffer).toString()))
     .catch(e => {
-      if (e.code === 'NoSuchKey') {
+      if ('code' in e && e.code === 'NoSuchKey') {
         return fixCache(pubbucket, time)
           .catch(console.warn)
           .then(() => []);
@@ -85,7 +87,7 @@ export const findBook = async (
   const text = await s3
     .getObject({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
     .promise()
-    .then(({ Body }) => ungzip(Body as Buffer))
+    .then(({ Body }) => gunzip(Body as Buffer))
     .then(book => book.toString().replace(spaces, ' '));
   return { ...file, text };
 };
@@ -142,37 +144,6 @@ const pickVisibility = async (): Promise<MastoVisibility> => {
   return n === 0 ? 'public' : 'unlisted';
 };
 
-const post = (
-  status: string,
-  nonce: string,
-  language: string | undefined,
-  visibility: MastoVisibility | undefined,
-  cw: string | undefined
-): Promise<MastoStatus> =>
-  fetch('https://oulipo.social/api/v1/statuses', {
-    method: 'post',
-    body: JSON.stringify({
-      status,
-      visibility,
-      language,
-      spoiler_text: cw,
-    }),
-    headers: {
-      Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-      'Content-Type': 'application/json',
-      'Idempotency-Key': nonce,
-    },
-  }).then(r => {
-    if (r.ok) {
-      return r.json() as Promise<MastoStatus>;
-    } else {
-      return r.text().then(text => {
-        console.error(text);
-        throw r.statusText;
-      });
-    }
-  });
-
 const savePosts = (time: string, posts: ReadonlyArray<PostData>) =>
   s3
     .putObject({
@@ -199,7 +170,13 @@ const doit: AWSLambda.ScheduledHandler = async ({ time }) => {
   ]);
   const snippet = findPhrasing(text);
   const lang = codeForLang(Language);
-  const status = await post(snippet, nonce, lang, visibility, warning(snippet));
+  const status = await post({
+    status: snippet,
+    nonce,
+    language: lang,
+    visibility,
+    cw: warning(snippet),
+  });
   const newPost: PostData = {
     url: status.url,
     post: snippet,
