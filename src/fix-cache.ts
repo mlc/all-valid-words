@@ -1,9 +1,7 @@
-import AWS from 'aws-sdk';
 import { ZonedDateTime, ZoneId } from '@js-joda/core';
 
 import { getFileName } from './date';
-
-const s3 = new AWS.S3();
+import s3 from './s3';
 
 const fixCache = (Bucket: string, time: string): Promise<unknown> => {
   const now = ZonedDateTime.parse(time).withZoneSameInstant(ZoneId.UTC);

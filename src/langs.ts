@@ -1,4 +1,4 @@
-const langs: { [lang: string]: string } = {
+export const langs: { [lang: string]: string } = {
   Afrikaans: 'af',
   Aleut: 'ale',
   Arabic: 'ar',
@@ -58,4 +58,11 @@ const langs: { [lang: string]: string } = {
   Yiddish: 'yi',
 };
 
-export default langs;
+export const codeForLang = (
+  languages: ReadonlyArray<string>
+): string | undefined => {
+  if (languages.length !== 1) {
+    return undefined;
+  }
+  return langs[languages[0]];
+};

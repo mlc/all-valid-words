@@ -1,4 +1,3 @@
-import AWS from 'aws-sdk';
 import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
 import memoize from 'lodash/memoize';
 import fetch from 'node-fetch';
@@ -7,9 +6,10 @@ import weightedRandomObject from 'weighted-random-object';
 
 import { getFileName } from './date';
 import fixCache from './fix-cache';
-import langs from './langs';
+import { codeForLang } from './langs';
 import { MastoStatus, MastoVisibility } from './mastodon';
 import { pRandomBytes, randomNumber } from './random-number';
+import s3 from './s3';
 
 export interface GutenbergBook {
   Author: Array<string>;
@@ -42,8 +42,6 @@ interface PostData {
   lang?: string;
   ts?: string;
 }
-
-const s3 = new AWS.S3();
 
 const bucket = 'gutenberg-data.oulipo.link';
 const metadataFile = 'gutenberg-metadata.json.gz';
@@ -174,15 +172,6 @@ const post = (
       });
     }
   });
-
-export const codeForLang = (
-  languages: ReadonlyArray<string>
-): string | undefined => {
-  if (languages.length !== 1) {
-    return undefined;
-  }
-  return langs[languages[0]];
-};
 
 const savePosts = (time: string, posts: ReadonlyArray<PostData>) =>
   s3
