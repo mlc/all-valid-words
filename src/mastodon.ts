@@ -51,11 +51,11 @@ export const post = ({
       'Content-Type': 'application/json',
       'Idempotency-Key': nonce,
     },
-  }).then(r => {
+  }).then((r) => {
     if (r.ok) {
       return r.json() as Promise<MastoStatus>;
     } else {
-      return r.text().then(text => {
+      return r.text().then((text) => {
         console.error(text);
         throw r.statusText;
       });

@@ -10,10 +10,10 @@ export const enqueuer: AWSLambda.Handler = async () => {
   for (let i = 0; i < chunks.length; i += 1) {
     const bigChunk = chunks[i];
     await Promise.all(
-      chunk(bigChunk, 10).map(littleChunk =>
+      chunk(bigChunk, 10).map((littleChunk) =>
         sqs
           .sendMessageBatch({
-            Entries: littleChunk.map(book => ({
+            Entries: littleChunk.map((book) => ({
               Id: book.Num,
               MessageBody: JSON.stringify(book),
             })),
@@ -43,9 +43,9 @@ const handleBook = async (book: GutenbergBook): Promise<void> => {
     .promise();
 };
 
-export const dequeuer: AWSLambda.SQSHandler = event =>
-  Promise.all(event.Records.map(r => handleBook(JSON.parse(r.body)))).then(
-    as => {
+export const dequeuer: AWSLambda.SQSHandler = (event) =>
+  Promise.all(event.Records.map((r) => handleBook(JSON.parse(r.body)))).then(
+    (as) => {
       console.log(`processed ${as.length} books`);
     }
   );

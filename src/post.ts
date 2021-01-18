@@ -57,8 +57,8 @@ export const metadata: () => Promise<Array<GutenbergBook>> = memoize(() =>
     .getObject({ Bucket: bucket, Key: metadataFile })
     .promise()
     .then(({ Body }) => gunzip(Body as Buffer))
-    .then(data => JSON.parse(data.toString()) as Array<GutenbergBook>)
-    .then(data =>
+    .then((data) => JSON.parse(data.toString()) as Array<GutenbergBook>)
+    .then((data) =>
       data.filter(
         ({ 'Copyright Status': [cs] }) =>
           cs === 'Not copyrighted in the United States.' ||
@@ -72,7 +72,7 @@ const getOldPosts = (time: string): Promise<ReadonlyArray<PostData>> =>
     .getObject({ Bucket: pubbucket, Key: getFileName(time) })
     .promise()
     .then(({ Body }) => JSON.parse((Body as Buffer).toString()))
-    .catch(e => {
+    .catch((e) => {
       if ('code' in e && e.code === 'NoSuchKey') {
         return fixCache(pubbucket, time)
           .catch(console.warn)
@@ -88,7 +88,7 @@ export const findBook = async (
     .getObject({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
     .promise()
     .then(({ Body }) => gunzip(Body as Buffer))
-    .then(book => book.toString().replace(spaces, ' '));
+    .then((book) => book.toString().replace(spaces, ' '));
   return { ...file, text };
 };
 
@@ -104,7 +104,7 @@ export const findPhrasings = (text: string): ReadonlyArray<string> =>
   text.match(allValidSymbols) || [];
 
 const findPhrasing = (text: string): string => {
-  const matches = findPhrasings(text).map(m => {
+  const matches = findPhrasings(text).map((m) => {
     const str = m.trim();
     const len = str.length;
     return { str, weight: len * len };
@@ -116,7 +116,7 @@ const findPhrasing = (text: string): string => {
 };
 
 const makeNonce = (): Promise<string> =>
-  pRandomBytes(32).then(buf => buf.toString('hex'));
+  pRandomBytes(32).then((buf) => buf.toString('hex'));
 
 const hanzi = /\p{Script=Han}/u;
 const cyrl = /\p{Script=Cyrillic}/u;
