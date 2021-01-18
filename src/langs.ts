@@ -61,7 +61,7 @@ export const langs: { [lang: string]: string } = {
 export const codeForLang = (
   languages: ReadonlyArray<string>
 ): string | undefined => {
-  if (languages.length !== 1) {
+  if (!languages || languages.length !== 1) {
     return undefined;
   }
   return langs[languages[0]];

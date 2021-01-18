@@ -8,7 +8,7 @@ import {
 const ym = DateTimeFormatter.ofPattern('yyyy-MM');
 
 export const getFileName = (ts: string | TemporalAccessor): string => {
-  const temporal =
+  const temporal: TemporalAccessor =
     typeof ts === 'string'
       ? ZonedDateTime.parse(ts).withZoneSameInstant(ZoneId.UTC)
       : ts;
