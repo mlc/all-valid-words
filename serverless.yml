@@ -77,19 +77,19 @@ functions:
     environment:
       SQS_QUEUE_URL:
         Ref: FanOutQueue
-  statsDequeuer:
-    timeout: 50
-    handler: src/stats.dequeuer
-    reservedConcurrency: 5
-    memorySize: 2048
-    events:
-      - sqs:
-          arn:
-            Fn::GetAtt:
-              - FanOutQueue
-              - Arn
-          batchSize: 5
-          enabled: false
+#  statsDequeuer:
+#    timeout: 50
+#    handler: src/stats.dequeuer
+#    reservedConcurrency: 5
+#    memorySize: 2048
+#    events:
+#      - sqs:
+#          arn:
+#            Fn::GetAtt:
+#              - FanOutQueue
+#              - Arn
+#          batchSize: 5
+#          enabled: false
 
 resources:
   Resources:
