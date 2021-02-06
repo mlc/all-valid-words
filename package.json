@@ -52,7 +52,8 @@
     "aws-sdk": "^2.828.0",
     "lodash": "^4.17.20",
     "node-fetch": "3.0.0-beta.9",
-    "weighted-random-object": "^1.0.8"
+    "weighted-random-object": "^1.0.8",
+    "wordfilter": "^0.2.6"
   },
   "husky": {
     "hooks": {

@@ -8507,6 +8507,11 @@ word-wrap@^1.2.3:
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.3.tgz#610636f6b1f703891bd34771ccb17fb93b47079c"
   integrity sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==
 
+wordfilter@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/wordfilter/-/wordfilter-0.2.6.tgz#de41ac634aa994b9f1bb938c1ccbbcde49641465"
+  integrity sha1-3kGsY0qplLnxu5OMHMu83klkFGU=
+
 worker-farm@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/worker-farm/-/worker-farm-1.7.0.tgz#26a94c5391bbca926152002f69b84a4bf772e5a8"

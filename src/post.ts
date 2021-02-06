@@ -2,6 +2,7 @@ import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
 import memoize from 'lodash/memoize';
 import { promisify } from 'util';
 import weightedRandomObject from 'weighted-random-object';
+import { blacklisted as blocklisted } from 'wordfilter';
 import * as zlib from 'zlib';
 
 import { getFileName } from './date';
@@ -104,11 +105,13 @@ export const findPhrasings = (text: string): ReadonlyArray<string> =>
   text.match(allValidSymbols) || [];
 
 const findPhrasing = (text: string): string => {
-  const matches = findPhrasings(text).map((m) => {
-    const str = m.trim();
-    const len = str.length;
-    return { str, weight: len * len };
-  });
+  const matches = findPhrasings(text)
+    .filter((phrasing) => !blocklisted(phrasing))
+    .map((m) => {
+      const str = m.trim();
+      const len = str.length;
+      return { str, weight: len * len };
+    });
   if (matches.length === 0) {
     throw new Error("couldn't find valid phrasing");
   }
