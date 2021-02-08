@@ -1332,6 +1332,11 @@
   resolved "https://registry.yarnpkg.com/@types/weighted-random-object/-/weighted-random-object-1.0.0.tgz#5a5dac5a9cdbd40dcf4ed9f3d405fa61a5601bba"
   integrity sha512-ezpY4RF5FaXYotXuxIcAY5S4W94ygRyB575vf+FnVba3mg9x+QM+Po4Ajo5OCLd3bYh4ulDKpNxboT0D4SrJIA==
 
+"@types/wordfilter@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@types/wordfilter/-/wordfilter-0.2.0.tgz#d056c9a65eb8a48a0d592e4ca3193cba25463eca"
+  integrity sha512-DNPoxDwAqXCMbs9wcbOb8ISSJyMU7gESlzbC2lxa7KAaIR+O0UU9zOwsU8l00uvXh4F+m7tyLlrvdiwqkWoBAg==
+
 "@typescript-eslint/eslint-plugin@^4.13.0":
   version "4.13.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.13.0.tgz#5f580ea520fa46442deb82c038460c3dd3524bb6"
