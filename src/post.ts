@@ -129,17 +129,15 @@ const greek = /\p{Script=Greek}/u;
 const warning = (text: string): string | undefined => {
   if (hanzi.test(text)) {
     return 'hanzi';
-  }
-  if (cyrl.test(text)) {
+  } else if (cyrl.test(text)) {
     return 'cyrillic';
-  }
-  if (hangul.test(text)) {
+  } else if (hangul.test(text)) {
     return 'hangul';
-  }
-  if (greek.test(text)) {
+  } else if (greek.test(text)) {
     return 'doric';
+  } else {
+    return undefined;
   }
-  return undefined;
 };
 
 const pickVisibility = async (): Promise<MastoVisibility> => {
