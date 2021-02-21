@@ -1,9 +1,8 @@
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
 import memoize from 'lodash/memoize';
-import { promisify } from 'util';
 import weightedRandomObject from 'weighted-random-object';
 import { blacklisted as blocklisted } from 'wordfilter';
-import * as zlib from 'zlib';
 
 import { getFileName } from './date';
 import fixCache from './fix-cache';
@@ -11,8 +10,7 @@ import { codeForLang } from './langs';
 import { MastoVisibility, post } from './mastodon';
 import { pRandomBytes, randomNumber } from './random-number';
 import s3 from './s3';
-
-const gunzip = promisify<zlib.InputType, Buffer>(zlib.gunzip);
+import { consume, gunzip } from './streams';
 
 export interface GutenbergBook {
   Author: Array<string>;
@@ -51,14 +49,19 @@ const metadataFile = 'gutenberg-metadata.json.gz';
 const pubbucket = 'words.oulipo.link';
 
 const spaces = /[\p{White_Space}]+/gu;
+const allValidSymbols = / [^EeÈÉÊËèéêëĒēĔĕĖėĘęĚěƐȄȅȆȇȨȩɛεϵЄЕеєҽԐԑعᎬᗴᘍᘓᥱᴱᵉᵋḘḙḚḛẸẹẺẻẼẽₑℇ℮ℯℰⅇ∈ⒺⓔⲈⲉⴹ㋍㋎ꗋꜪꜫﻉＥｅ𝈡𝐄𝐞𝐸𝑒𝑬𝒆𝓔𝓮𝔈𝔢𝔼𝕖𝕰𝖊𝖤𝖾𝗘𝗲𝘌𝘦𝙀𝙚𝙴𝚎🄴æœ]{30,490} /giu;
+const hanzi = /\p{Script=Han}/u;
+const cyrl = /\p{Script=Cyrillic}/u;
+const hangul = /\p{Script=Hangul}/u;
+const greek = /\p{Script=Greek}/u;
+
 const PUBLIC_ODDS = 6;
 
 export const metadata: () => Promise<Array<GutenbergBook>> = memoize(() =>
   s3
-    .getObject({ Bucket: bucket, Key: metadataFile })
-    .promise()
-    .then(({ Body }) => gunzip(Body as Buffer))
-    .then((data) => JSON.parse(data.toString()) as Array<GutenbergBook>)
+    .send(new GetObjectCommand({ Bucket: bucket, Key: metadataFile }))
+    .then(({ Body }) => gunzip(Body))
+    .then((data) => JSON.parse(data) as Array<GutenbergBook>)
     .then((data) =>
       data.filter(
         ({ 'Copyright Status': [cs] }) =>
@@ -70,11 +73,11 @@ export const metadata: () => Promise<Array<GutenbergBook>> = memoize(() =>
 
 const getOldPosts = (time: string): Promise<ReadonlyArray<PostData>> =>
   s3
-    .getObject({ Bucket: pubbucket, Key: getFileName(time) })
-    .promise()
-    .then(({ Body }) => JSON.parse((Body as Buffer).toString()))
+    .send(new GetObjectCommand({ Bucket: pubbucket, Key: getFileName(time) }))
+    .then(({ Body }) => consume(Body))
+    .then((body) => JSON.parse(body.toString('utf-8')))
     .catch((e) => {
-      if ('code' in e && e.code === 'NoSuchKey') {
+      if ('name' in e && e.name === 'NoSuchKey') {
         return fixCache(pubbucket, time)
           .catch(console.warn)
           .then(() => []);
@@ -86,10 +89,11 @@ export const findBook = async (
   file: GutenbergBook
 ): Promise<GutenbergBookWithText> => {
   const text = await s3
-    .getObject({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
-    .promise()
-    .then(({ Body }) => gunzip(Body as Buffer))
-    .then((book) => book.toString().replace(spaces, ' '));
+    .send(
+      new GetObjectCommand({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
+    )
+    .then(({ Body }) => gunzip(Body))
+    .then((book) => book.replace(spaces, ' '));
   return { ...file, text };
 };
 
@@ -98,8 +102,6 @@ export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
   const file = gutenberg[await randomNumber(gutenberg.length - 1)];
   return findBook(file);
 };
-
-const allValidSymbols = / [^EeÈÉÊËèéêëĒēĔĕĖėĘęĚěƐȄȅȆȇȨȩɛεϵЄЕеєҽԐԑعᎬᗴᘍᘓᥱᴱᵉᵋḘḙḚḛẸẹẺẻẼẽₑℇ℮ℯℰⅇ∈ⒺⓔⲈⲉⴹ㋍㋎ꗋꜪꜫﻉＥｅ𝈡𝐄𝐞𝐸𝑒𝑬𝒆𝓔𝓮𝔈𝔢𝔼𝕖𝕰𝖊𝖤𝖾𝗘𝗲𝘌𝘦𝙀𝙚𝙴𝚎🄴æœ]{30,490} /giu;
 
 export const findPhrasings = (text: string): ReadonlyArray<string> =>
   text.match(allValidSymbols) || [];
@@ -121,11 +123,6 @@ const findPhrasing = (text: string): string => {
 const makeNonce = (): Promise<string> =>
   pRandomBytes(32).then((buf) => buf.toString('hex'));
 
-const hanzi = /\p{Script=Han}/u;
-const cyrl = /\p{Script=Cyrillic}/u;
-const hangul = /\p{Script=Hangul}/u;
-const greek = /\p{Script=Greek}/u;
-
 const warning = (text: string): string | undefined => {
   if (hanzi.test(text)) {
     return 'hanzi';
@@ -146,8 +143,8 @@ const pickVisibility = async (): Promise<MastoVisibility> => {
 };
 
 const savePosts = (time: string, posts: ReadonlyArray<PostData>) =>
-  s3
-    .putObject({
+  s3.send(
+    new PutObjectCommand({
       Body: JSON.stringify(posts),
       Bucket: pubbucket,
       Key: getFileName(time),
@@ -155,7 +152,7 @@ const savePosts = (time: string, posts: ReadonlyArray<PostData>) =>
       CacheControl: 'public',
       Expires: convert(ZonedDateTime.now(ZoneId.UTC).plusHours(4)).toDate(),
     })
-    .promise();
+  );
 
 const doit: AWSLambda.ScheduledHandler = async ({ time }) => {
   const [
