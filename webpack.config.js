@@ -1,23 +1,25 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const nodeExternals = require('webpack-node-externals');
 const slsw = require('serverless-webpack');
 
 module.exports = {
   entry: slsw.lib.entries,
   target: 'node',
-  externals: [nodeExternals()],
   mode: 'production',
   module: {
     rules: [
       {
-        test: /\.(ts|js)$/,
-        loaders: ['babel-loader'],
+        test: /\.[tj]s$/,
+        use: { loader: 'babel-loader' },
         include: __dirname,
         exclude: /node_modules/,
       },
     ],
   },
+  devtool: 'source-map',
+  optimization: {
+    minimize: false,
+  },
   resolve: {
-    extensions: ['.ts', 'js'],
+    extensions: ['.ts', '.js'],
   },
 };
