@@ -1,4 +1,4 @@
-export const langs: { [lang: string]: string } = {
+export const langs: Record<string, string> = {
   Afrikaans: 'af',
   Aleut: 'ale',
   Arabic: 'ar',
@@ -59,7 +59,7 @@ export const langs: { [lang: string]: string } = {
 };
 
 export const codeForLang = (
-  languages: ReadonlyArray<string>
+  languages: readonly string[]
 ): string | undefined => {
   if (!languages || languages.length !== 1) {
     return undefined;

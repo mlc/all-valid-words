@@ -2,7 +2,7 @@ import { createGunzip } from 'zlib';
 
 export const consume = (stream: NodeJS.ReadableStream): Promise<Buffer> =>
   new Promise((resolve, reject) => {
-    const bufs: Array<Buffer> = [];
+    const bufs: Buffer[] = [];
     stream.on('data', (d) => bufs.push(d));
     stream.on('end', () => resolve(Buffer.concat(bufs)));
     stream.once('error', (e) => reject(e));

@@ -12,7 +12,7 @@ export interface MastoStatus {
   visibility: MastoVisibility;
   sensitive: boolean;
   spoiler_text: string;
-  media_attachments: Array<unknown>;
+  media_attachments: unknown[];
   application: unknown;
   reblogs_count: number;
   favourites_count: number;
@@ -31,14 +31,14 @@ interface PostParams {
   cw?: string;
 }
 
-export const post = ({
+export const post = async ({
   status,
   nonce,
   language,
   visibility,
   cw,
-}: PostParams): Promise<MastoStatus> =>
-  fetch('https://oulipo.social/api/v1/statuses', {
+}: PostParams): Promise<MastoStatus> => {
+  const r = await fetch('https://oulipo.social/api/v1/statuses', {
     method: 'post',
     body: JSON.stringify({
       status,
@@ -51,13 +51,12 @@ export const post = ({
       'Content-Type': 'application/json',
       'Idempotency-Key': nonce,
     },
-  }).then((r) => {
-    if (r.ok) {
-      return r.json() as Promise<MastoStatus>;
-    } else {
-      return r.text().then((text) => {
-        console.error(text);
-        throw r.statusText;
-      });
-    }
   });
+  if (r.ok) {
+    return r.json() as Promise<MastoStatus>;
+  } else {
+    const text = await r.text();
+    console.error(text);
+    throw r.statusText;
+  }
+};
