@@ -19,42 +19,43 @@ service: all-words
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   profile: default
   region: us-east-1
   memorySize: 1024
-  lambdaHashingVersion: 20201221
-  iamRoleStatements:
-    - Effect: 'Allow'
-      Action:
-        - 's3:GetObject'
-      Resource: 'arn:aws:s3:::gutenberg-data.oulipo.link/*'
-    - Effect: 'Allow'
-      Action:
-        - 's3:GetObject'
-        - 's3:PutObject'
-      Resource: 'arn:aws:s3:::words.oulipo.link/posts/*'
-    - Effect: 'Allow'
-      Action:
-        - 's3:ListBucket'
-      Resource: 'arn:aws:s3:::words.oulipo.link'
-    - Effect: 'Allow'
-      Action:
-        - 'sqs:SendMessage'
-        - 'sqs:SendMessageBatch'
-      Resource:
-        Fn::GetAtt:
-          - FanOutQueue
-          - Arn
-    - Effect: 'Allow'
-      Action:
-        - 'dynamodb:BatchWriteItem'
-        - 'dynamodb:DeleteItem'
-        - 'dynamodb:PutItem'
-      Resource:
-        Fn::GetAtt:
-          - StatsTable
-          - Arn
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 's3:GetObject'
+          Resource: 'arn:aws:s3:::gutenberg-data.oulipo.link/*'
+        - Effect: 'Allow'
+          Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+          Resource: 'arn:aws:s3:::words.oulipo.link/posts/*'
+        - Effect: 'Allow'
+          Action:
+            - 's3:ListBucket'
+          Resource: 'arn:aws:s3:::words.oulipo.link'
+        - Effect: 'Allow'
+          Action:
+            - 'sqs:SendMessage'
+            - 'sqs:SendMessageBatch'
+          Resource:
+            Fn::GetAtt:
+              - FanOutQueue
+              - Arn
+        - Effect: 'Allow'
+          Action:
+            - 'dynamodb:BatchWriteItem'
+            - 'dynamodb:DeleteItem'
+            - 'dynamodb:PutItem'
+          Resource:
+            Fn::GetAtt:
+              - StatsTable
+              - Arn
 
 custom:
   webpack:

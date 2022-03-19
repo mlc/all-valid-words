@@ -11,7 +11,6 @@ import { MastoVisibility, post } from './mastodon';
 import { pRandomBytes, randomNumber } from './random-number';
 import s3 from './s3';
 import { consume, gunzip } from './streams';
-import ReadableStream = NodeJS.ReadableStream;
 
 export interface GutenbergBook {
   Author: string[];
@@ -64,7 +63,7 @@ export const metadata: () => Promise<GutenbergBook[]> = memoize(async () => {
     new GetObjectCommand({ Bucket: bucket, Key: metadataFile })
   );
   const data = JSON.parse(
-    await gunzip(Body as ReadableStream)
+    await gunzip(Body as NodeJS.ReadableStream)
   ) as GutenbergBook[];
   return data.filter(
     ({ 'Copyright Status': [cs] }) =>
@@ -78,7 +77,7 @@ const getOldPosts = async (time: string): Promise<readonly PostData[]> => {
     const { Body } = await s3.send(
       new GetObjectCommand({ Bucket: pubbucket, Key: getFileName(time) })
     );
-    const body = await consume(Body as ReadableStream);
+    const body = await consume(Body as NodeJS.ReadableStream);
     return JSON.parse(body.toString('utf-8'));
   } catch (e) {
     if (e instanceof Error && e.name === 'NoSuchKey') {
@@ -97,7 +96,7 @@ export const findBook = async (
     .send(
       new GetObjectCommand({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
     )
-    .then(({ Body }) => gunzip(Body as ReadableStream))
+    .then(({ Body }) => gunzip(Body as NodeJS.ReadableStream))
     .then((book) => book.replace(spaces, ' '));
   return { ...file, text };
 };

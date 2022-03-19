@@ -1,8 +1,6 @@
 {
+  "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es6",
-    "lib": ["es6"],
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "composite": true,
