@@ -4,7 +4,10 @@
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "composite": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "sourceMap": true,
+    "declarationDir": "types"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
