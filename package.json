@@ -13,7 +13,8 @@
     "tail:hello": "serverless logs --function hello --tail",
     "test": "jest --watch",
     "watch:hello": "serverless invoke local --watch --function hello --path fixtures/event.json",
-    "watch:warm": "serverless invoke local --watch --function hello --path fixtures/scheduled.json"
+    "watch:warm": "serverless invoke local --watch --function hello --path fixtures/scheduled.json",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.1",
@@ -30,7 +31,7 @@
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
-    "husky": "^4.3.8",
+    "husky": "^8.0.0",
     "prettier": "^2.6.0",
     "pretty-quick": "^3.1.3",
     "serverless": "^3.7.9",
@@ -50,10 +51,5 @@
     "tslib": "^2.3.1",
     "weighted-random-object": "^1.0.8",
     "wordfilter": "^0.2.6"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
   }
 }
