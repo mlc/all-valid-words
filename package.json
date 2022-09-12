@@ -4,10 +4,7 @@
   "main": "src/handler.js",
   "license": "MIT",
   "scripts": {
-    "deploy:dev": "export NODE_ENV=dev && yarn deploy:env",
-    "deploy:env": "sls deploy --stage $NODE_ENV",
-    "deploy:production": "export NODE_ENV=production && yarn deploy:env",
-    "deploy:stage": "export NODE_ENV=stage && yarn deploy:env",
+    "deploy": "sls deploy --stage production",
     "lint": "eslint --ext .js,.ts ./src",
     "lint:types": "tsc --noEmit",
     "tail:hello": "serverless logs --function hello --tail",
