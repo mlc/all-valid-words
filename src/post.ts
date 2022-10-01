@@ -1,14 +1,13 @@
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
 import memoize from 'lodash/memoize';
-import weightedRandomObject from 'weighted-random-object';
 import { blacklisted as blocklisted } from 'wordfilter';
 
 import { getFileName } from './date';
 import fixCache from './fix-cache';
 import { codeForLang } from './langs';
 import { MastoVisibility, post } from './mastodon';
-import { pRandomBytes, randomNumber } from './random-number';
+import { pRandomBytes, randomNumber, weightedRandom } from './random-number';
 import s3 from './s3';
 import { consume, gunzip } from './streams';
 
@@ -110,7 +109,7 @@ export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
 export const findPhrasings = (text: string): readonly string[] =>
   text.match(allValidSymbols) || [];
 
-const findPhrasing = (text: string): string => {
+const findPhrasing = (text: string): Promise<string> => {
   const matches = findPhrasings(text)
     .filter((phrasing) => !blocklisted(phrasing))
     .map((m) => {
@@ -121,7 +120,7 @@ const findPhrasing = (text: string): string => {
   if (matches.length === 0) {
     throw new Error("couldn't find valid phrasing");
   }
-  return weightedRandomObject(matches).str;
+  return weightedRandom(matches).then(({ str }) => str);
 };
 
 const makeNonce = (): Promise<string> =>
@@ -166,7 +165,7 @@ const doit: AWSLambda.ScheduledHandler = async ({ time }) => {
       pickVisibility(),
       makeNonce(),
     ]);
-  const snippet = findPhrasing(text);
+  const snippet = await findPhrasing(text);
   const lang = codeForLang(Language);
   const status = await post({
     status: snippet,

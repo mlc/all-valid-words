@@ -24,3 +24,23 @@ export const randomNumber = async (max: number): Promise<number> => {
 
   return n % max;
 };
+
+export interface Weighted {
+  weight: number;
+}
+
+export const weightedRandom = async <T extends Weighted>(
+  objects: readonly T[]
+): Promise<T> => {
+  const totalWeight = objects.reduce((a, { weight }) => a + weight, 0);
+  const targetWeight = await randomNumber(totalWeight);
+  let weightSum = 0;
+  const result = objects.find(({ weight }) => {
+    weightSum += weight;
+    return targetWeight <= weightSum;
+  });
+  if (!result) {
+    throw new Error("couldn't get object");
+  }
+  return result;
+};
