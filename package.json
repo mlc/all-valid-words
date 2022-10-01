@@ -37,14 +37,14 @@
     "webpack": "^5.74.0"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.168.0",
-    "@aws-sdk/client-s3": "3.168.0",
-    "@aws-sdk/client-sqs": "3.168.0",
-    "@aws-sdk/util-dynamodb": "3.168.0",
-    "@js-joda/core": "5.3.1",
+    "@aws-sdk/client-dynamodb": "3.181.0",
+    "@aws-sdk/client-s3": "3.181.0",
+    "@aws-sdk/client-sqs": "3.181.0",
+    "@aws-sdk/util-dynamodb": "3.181.0",
+    "@js-joda/core": "5.4.1",
     "lodash": "^4.17.21",
     "node-fetch": "3.2.10",
     "tslib": "2.4.0",
-    "wordfilter": "^0.2.6"
+    "wordfilter": "0.2.6"
   }
 }
