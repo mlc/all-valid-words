@@ -113,7 +113,7 @@ export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
 export const findPhrasings = (text: string): readonly string[] =>
   text.match(allValidSymbols) || [];
 
-const findPhrasing = (text: string): Promise<string> => {
+const findPhrasing = (text: string, bookId: string): Promise<string> => {
   const matches = findPhrasings(text)
     .filter((phrasing) => !blocklisted(phrasing))
     .map((m) => {
@@ -122,7 +122,7 @@ const findPhrasing = (text: string): Promise<string> => {
       return { str, weight: len * len };
     });
   if (matches.length === 0) {
-    throw new Error("couldn't find valid phrasing");
+    throw new Error(`couldn't find valid phrasing in book ${bookId}`);
   }
   return weightedRandom(matches).then(({ str }) => str);
 };
@@ -169,7 +169,7 @@ const doit: AWSLambda.ScheduledHandler = async ({ time }) => {
       pickVisibility(),
       makeNonce(),
     ]);
-  const snippet = await findPhrasing(text);
+  const snippet = await findPhrasing(text, Num);
   const lang = codeForLang(Language);
   const status = await post({
     status: snippet,
