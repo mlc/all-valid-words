@@ -2,7 +2,7 @@
 import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
 import { marshall } from '@aws-sdk/util-dynamodb';
-import chunk from 'lodash/chunk';
+import chunk from './chunk';
 import { findBook, findPhrasings, GutenbergBook, metadata } from './post';
 
 export const enqueuer: AWSLambda.Handler = async () => {

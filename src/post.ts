@@ -1,7 +1,8 @@
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
-import memoize from 'lodash/memoize';
+import memoize from 'memoizee';
 import { blacklisted as blocklisted } from 'wordfilter';
+import getStream from 'get-stream';
 
 import { getFileName } from './date';
 import fixCache from './fix-cache';
@@ -9,7 +10,7 @@ import { codeForLang } from './langs';
 import { MastoVisibility, post } from './mastodon';
 import { pRandomBytes, randomNumber, weightedRandom } from './random-number';
 import s3 from './s3';
-import { consume, gunzip } from './streams';
+import { gunzip } from './streams';
 
 export interface GutenbergBook {
   Author: string[];
@@ -57,27 +58,30 @@ const greek = /\p{Script=Greek}/u;
 
 const PUBLIC_ODDS = 6;
 
-export const metadata: () => Promise<GutenbergBook[]> = memoize(async () => {
-  const { Body } = await s3.send(
-    new GetObjectCommand({ Bucket: bucket, Key: metadataFile })
-  );
-  const data = JSON.parse(
-    await gunzip(Body as NodeJS.ReadableStream)
-  ) as GutenbergBook[];
-  return data.filter(
-    ({ 'Copyright Status': [cs] }) =>
-      cs === 'Not copyrighted in the United States.' ||
-      cs === 'Public domain in the USA.'
-  );
-});
+export const metadata: () => Promise<GutenbergBook[]> = memoize(
+  async () => {
+    const { Body } = await s3.send(
+      new GetObjectCommand({ Bucket: bucket, Key: metadataFile })
+    );
+    const data = JSON.parse(
+      await gunzip(Body as NodeJS.ReadableStream)
+    ) as GutenbergBook[];
+    return data.filter(
+      ({ 'Copyright Status': [cs] }) =>
+        cs === 'Not copyrighted in the United States.' ||
+        cs === 'Public domain in the USA.'
+    );
+  },
+  { promise: true }
+);
 
 const getOldPosts = async (time: string): Promise<readonly PostData[]> => {
   try {
     const { Body } = await s3.send(
       new GetObjectCommand({ Bucket: pubbucket, Key: getFileName(time) })
     );
-    const body = await consume(Body as NodeJS.ReadableStream);
-    return JSON.parse(body.toString('utf-8'));
+    const body = await getStream(Body as NodeJS.ReadableStream);
+    return JSON.parse(body);
   } catch (e) {
     if (e instanceof Error && e.name === 'NoSuchKey') {
       await fixCache(pubbucket, time).catch(console.warn);
