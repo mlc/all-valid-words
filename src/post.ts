@@ -1,7 +1,10 @@
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
 import memoize from 'memoizee';
-import { blacklisted as blocklisted } from 'wordfilter';
+import {
+  blacklisted as blocklisted,
+  addWords as addBlocklist,
+} from 'wordfilter';
 import getStream from 'get-stream';
 
 import { getFileName } from './date';
@@ -162,6 +165,7 @@ const savePosts = (time: string, posts: readonly PostData[]) =>
   );
 
 const doit: AWSLambda.ScheduledHandler = async ({ time }) => {
+  addBlocklist(['blackamoor']);
   const [{ text, Author, Language, Num, Title }, oldPosts, visibility, nonce] =
     await Promise.all([
       findRandomBook(),
