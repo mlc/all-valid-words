@@ -6,12 +6,14 @@ import {
   addWords as addBlocklist,
 } from 'wordfilter';
 import getStream from 'get-stream';
+import { randomInt } from 'node:crypto';
+import type { ScheduledHandler } from 'aws-lambda';
 
 import { getFileName } from './date';
 import fixCache from './fix-cache';
 import { codeForLang } from './langs';
 import { MastoVisibility, post } from './mastodon';
-import { pRandomBytes, randomNumber, weightedRandom } from './random-number';
+import { pRandomBytes, weightedRandom } from './rng';
 import s3 from './s3';
 import { gunzip } from './streams';
 
@@ -109,14 +111,14 @@ export const findBook = async (
 
 export const findRandomBook = async (): Promise<GutenbergBookWithText> => {
   const gutenberg = await metadata();
-  const file = gutenberg[await randomNumber(gutenberg.length - 1)];
+  const file = gutenberg[randomInt(gutenberg.length)];
   return findBook(file);
 };
 
 export const findPhrasings = (text: string): readonly string[] =>
   text.match(allValidSymbols) || [];
 
-const findPhrasing = (text: string, bookId: string): Promise<string> => {
+const findPhrasing = (text: string, bookId: string): string => {
   const matches = findPhrasings(text)
     .filter((phrasing) => !blocklisted(phrasing))
     .map((m) => {
@@ -127,7 +129,7 @@ const findPhrasing = (text: string, bookId: string): Promise<string> => {
   if (matches.length === 0) {
     throw new Error(`couldn't find valid phrasing in book ${bookId}`);
   }
-  return weightedRandom(matches).then(({ str }) => str);
+  return weightedRandom(matches).str;
 };
 
 const makeNonce = (): Promise<string> =>
@@ -147,8 +149,8 @@ const warning = (text: string): string | undefined => {
   }
 };
 
-const pickVisibility = async (): Promise<MastoVisibility> => {
-  const n = await randomNumber(PUBLIC_ODDS - 1);
+const pickVisibility = (): MastoVisibility => {
+  const n = randomInt(PUBLIC_ODDS);
   return n === 0 ? 'public' : 'unlisted';
 };
 
@@ -164,7 +166,7 @@ const savePosts = (time: string, posts: readonly PostData[]) =>
     })
   );
 
-const doit: AWSLambda.ScheduledHandler = async ({ time }) => {
+const doit: ScheduledHandler = async ({ time }) => {
   addBlocklist(['blackamoor']);
   const [{ text, Author, Language, Num, Title }, oldPosts, visibility, nonce] =
     await Promise.all([
@@ -173,7 +175,7 @@ const doit: AWSLambda.ScheduledHandler = async ({ time }) => {
       pickVisibility(),
       makeNonce(),
     ]);
-  const snippet = await findPhrasing(text, Num);
+  const snippet = findPhrasing(text, Num);
   const lang = codeForLang(Language);
   const status = await post({
     status: snippet,

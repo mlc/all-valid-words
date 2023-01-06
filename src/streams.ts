@@ -1,4 +1,4 @@
-import { createGunzip } from 'zlib';
+import { createGunzip } from 'node:zlib';
 import getStream from 'get-stream';
 import type { Stream } from 'node:stream';
 
