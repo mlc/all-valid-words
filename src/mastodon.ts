@@ -1,4 +1,6 @@
 /* eslint-disable camelcase */
+import { getToken } from './secret';
+
 export type MastoVisibility = 'public' | 'unlisted' | 'private' | 'direct';
 
 export interface MastoStatus {
@@ -36,6 +38,7 @@ export const post = async ({
   visibility,
   cw,
 }: PostParams): Promise<MastoStatus> => {
+  const token = await getToken();
   const r = await fetch('https://oulipo.social/api/v1/statuses', {
     method: 'post',
     body: JSON.stringify({
@@ -45,7 +48,7 @@ export const post = async ({
       spoiler_text: cw,
     }),
     headers: {
-      Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
       'Idempotency-Key': nonce,
     },

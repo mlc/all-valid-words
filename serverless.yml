@@ -75,7 +75,6 @@ functions:
           rate: rate(4 hours)
           enabled: true
     environment:
-      ACCESS_TOKEN: '{{resolve:secretsmanager:all-words/mastodon-api}}'
       NODE_OPTIONS: '--enable-source-maps'
   statsEnqueuer:
     timeout: 600
