@@ -1,6 +1,4 @@
 /* eslint-disable camelcase */
-import fetch from 'node-fetch';
-
 export type MastoVisibility = 'public' | 'unlisted' | 'private' | 'direct';
 
 export interface MastoStatus {

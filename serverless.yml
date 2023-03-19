@@ -58,10 +58,14 @@ provider:
               - Arn
 
 custom:
-  webpack:
-    includeModules:
-      forceExclude:
-        - aws-sdk
+  esbuild:
+    exclude:
+      - '@aws-sdk'
+    format: esm
+    target: node18
+    sourcemap: true
+    outExtension:
+      '.js': '.mjs'
 
 functions:
   hello:
@@ -72,12 +76,14 @@ functions:
           enabled: true
     environment:
       ACCESS_TOKEN: '{{resolve:secretsmanager:all-words/mastodon-api}}'
+      NODE_OPTIONS: '--enable-source-maps'
   statsEnqueuer:
     timeout: 600
     handler: src/stats.enqueuer
     environment:
       SQS_QUEUE_URL:
         Ref: FanOutQueue
+      NODE_OPTIONS: '--enable-source-maps'
 #  statsDequeuer:
 #    timeout: 50
 #    handler: src/stats.dequeuer
@@ -111,4 +117,4 @@ resources:
             AttributeType: S
 
 plugins:
-  - serverless-webpack
+  - serverless-esbuild
