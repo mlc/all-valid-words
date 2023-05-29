@@ -5,5 +5,5 @@ import type { Stream } from 'node:stream';
 export const gunzip = (stream: Stream): Promise<string> => {
   const z = createGunzip();
   stream.pipe(z, { end: true });
-  return getStream(z);
+  return getStream(z, { encoding: 'utf-8' });
 };

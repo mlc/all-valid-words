@@ -5,7 +5,6 @@ import {
   blacklisted as blocklisted,
   addWords as addBlocklist,
 } from 'wordfilter';
-import getStream from 'get-stream';
 import { randomInt } from 'node:crypto';
 import type { ScheduledHandler } from 'aws-lambda';
 
@@ -85,7 +84,7 @@ const getOldPosts = async (time: string): Promise<readonly PostData[]> => {
     const { Body } = await s3.send(
       new GetObjectCommand({ Bucket: pubbucket, Key: getFileName(time) })
     );
-    const body = await getStream(Body as NodeJS.ReadableStream);
+    const body = await (Body?.transformToString() ?? '');
     return JSON.parse(body);
   } catch (e) {
     if (e instanceof Error && e.name === 'NoSuchKey') {
