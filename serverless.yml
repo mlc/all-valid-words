@@ -83,8 +83,6 @@ custom:
   esbuild:
     exclude:
       - '@aws-sdk'
-    external:
-      - 'get-stream'
     format: esm
     target: node18
     sourcemap: true
