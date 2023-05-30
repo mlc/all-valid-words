@@ -99,12 +99,11 @@ const getOldPosts = async (time: string): Promise<readonly PostData[]> => {
 export const findBook = async (
   file: GutenbergBook
 ): Promise<GutenbergBookWithText> => {
-  const text = await s3
-    .send(
-      new GetObjectCommand({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
-    )
-    .then(({ Body }) => gunzip(Body as NodeJS.ReadableStream))
-    .then((book) => book.replace(spaces, ' '));
+  const { Body } = await s3.send(
+    new GetObjectCommand({ Bucket: bucket, Key: `${file['gd-path']}.gz` })
+  );
+  const book = await gunzip(Body as NodeJS.ReadableStream);
+  const text = book.replace(spaces, ' ');
   return { ...file, text };
 };
 

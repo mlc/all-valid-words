@@ -1,9 +1,12 @@
 import { createGunzip } from 'node:zlib';
-import getStream from 'get-stream';
-import type { Stream } from 'node:stream';
 
-export const gunzip = (stream: Stream): Promise<string> => {
-  const z = createGunzip();
-  stream.pipe(z, { end: true });
-  return getStream(z, { encoding: 'utf-8' });
-};
+export const gunzip = async (stream: NodeJS.ReadableStream): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const z = createGunzip();
+    const chunks: string[] = [];
+    z.setEncoding('utf-8');
+    z.on('data', (chunk) => chunks.push(chunk))
+      .on('end', () => resolve(chunks.join('')))
+      .on('error', (e) => reject(e));
+    stream.pipe(z, { end: true });
+  });
