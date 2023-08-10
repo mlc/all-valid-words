@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { convert, ZonedDateTime, ZoneId } from '@js-joda/core';
 import memoize from 'memoizee';
@@ -5,7 +6,6 @@ import {
   blacklisted as blocklisted,
   addWords as addBlocklist,
 } from 'wordfilter';
-import { randomInt } from 'node:crypto';
 import type { ScheduledHandler } from 'aws-lambda';
 
 import { getFileName } from './date';
