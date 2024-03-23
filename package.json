@@ -36,12 +36,12 @@
     "typescript": "5.4.3"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.523.0",
-    "@aws-sdk/client-s3": "3.523.0",
-    "@aws-sdk/client-secrets-manager": "3.523.0",
-    "@aws-sdk/client-sqs": "3.523.0",
-    "@aws-sdk/util-dynamodb": "3.523.0",
-    "@js-joda/core": "5.6.1",
+    "@aws-sdk/client-dynamodb": "3.540.0",
+    "@aws-sdk/client-s3": "3.540.0",
+    "@aws-sdk/client-secrets-manager": "3.540.0",
+    "@aws-sdk/client-sqs": "3.540.0",
+    "@aws-sdk/util-dynamodb": "3.540.0",
+    "@js-joda/core": "5.6.2",
     "memoizee": "0.4.15",
     "tslib": "2.6.2",
     "wordfilter": "0.2.6"
