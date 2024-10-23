@@ -17,7 +17,7 @@
     "@tsconfig/node20": "20.1.4",
     "@types/aws-lambda": "8.10.145",
     "@types/memoizee": "0.4.11",
-    "@types/node": "20.16.10",
+    "@types/node": "20.17.0",
     "@types/wordfilter": "0.2.2",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
@@ -32,8 +32,8 @@
     "lint-staged": "15.2.10",
     "prettier": "3.3.3",
     "serverless": "3.39.0",
-    "serverless-esbuild": "1.54.3",
-    "typescript": "5.6.2"
+    "serverless-esbuild": "1.54.4",
+    "typescript": "5.6.3"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "3.662.0",
