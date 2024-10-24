@@ -36,15 +36,15 @@
     "typescript": "5.6.2"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "3.662.0",
-    "@aws-sdk/client-dynamodb": "3.662.0",
-    "@aws-sdk/client-s3": "3.663.0",
-    "@aws-sdk/client-secrets-manager": "3.662.0",
-    "@aws-sdk/client-sqs": "3.662.0",
-    "@aws-sdk/util-dynamodb": "3.662.0",
+    "@aws-sdk/client-cloudformation": "3.679.0",
+    "@aws-sdk/client-dynamodb": "3.679.0",
+    "@aws-sdk/client-s3": "3.679.0",
+    "@aws-sdk/client-secrets-manager": "3.679.0",
+    "@aws-sdk/client-sqs": "3.679.0",
+    "@aws-sdk/util-dynamodb": "3.679.0",
     "@js-joda/core": "5.6.3",
     "memoizee": "0.4.17",
-    "tslib": "2.7.0",
+    "tslib": "2.8.0",
     "wordfilter": "0.2.6"
   },
   "lint-staged": {
