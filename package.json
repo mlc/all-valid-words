@@ -14,10 +14,10 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@tsconfig/node20": "20.1.4",
+    "@tsconfig/node22": "22.0.0",
     "@types/aws-lambda": "8.10.147",
     "@types/memoizee": "0.4.11",
-    "@types/node": "20.17.14",
+    "@types/node": "22.10.7",
     "@types/wordfilter": "0.2.2",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
