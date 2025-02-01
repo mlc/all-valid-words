@@ -1,20 +1,22 @@
-import {
-  GetSecretValueCommand,
-  SecretsManagerClient,
-} from '@aws-sdk/client-secrets-manager';
+import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import memoize from 'memoizee';
 
-const ssm = new SecretsManagerClient({ region: 'us-east-1' });
+const ssm = new SSMClient({ region: 'us-east-1' });
 
-export const getToken = memoize(
+export const getToken: () => Promise<string> = memoize(
   () =>
     ssm
-      .send(new GetSecretValueCommand({ SecretId: 'all-words/mastodon-api' }))
-      .then(({ SecretString }) => {
-        if (!SecretString) {
+      .send(
+        new GetParameterCommand({
+          Name: '/all-words/mastodon-api',
+          WithDecryption: true,
+        })
+      )
+      .then(({ Parameter }) => {
+        if (!Parameter?.Value) {
           throw new Error("couldn't get secret");
         }
-        return SecretString;
+        return Parameter.Value;
       }),
   { promise: true }
 );
