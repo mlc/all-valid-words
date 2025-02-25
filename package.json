@@ -36,12 +36,12 @@
     "typescript": "5.7.3"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "3.738.0",
-    "@aws-sdk/client-dynamodb": "3.738.0",
-    "@aws-sdk/client-s3": "3.740.0",
-    "@aws-sdk/client-sqs": "3.738.0",
-    "@aws-sdk/client-ssm": "3.738.0",
-    "@aws-sdk/util-dynamodb": "3.738.0",
+    "@aws-sdk/client-cloudformation": "3.750.0",
+    "@aws-sdk/client-dynamodb": "3.751.0",
+    "@aws-sdk/client-s3": "3.750.0",
+    "@aws-sdk/client-sqs": "3.750.0",
+    "@aws-sdk/client-ssm": "3.750.0",
+    "@aws-sdk/util-dynamodb": "3.751.0",
     "@js-joda/core": "5.6.4",
     "memoizee": "0.4.17",
     "tslib": "2.8.1",
