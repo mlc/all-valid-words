@@ -15,9 +15,9 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "22.0.1",
-    "@types/aws-lambda": "8.10.148",
+    "@types/aws-lambda": "8.10.149",
     "@types/memoizee": "0.4.12",
-    "@types/node": "22.13.14",
+    "@types/node": "22.14.1",
     "@types/wordfilter": "0.2.2",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
@@ -27,13 +27,13 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-import-resolver-typescript": "3.10.0",
     "eslint-plugin-import": "2.31.0",
-    "eslint-plugin-prettier": "5.2.5",
+    "eslint-plugin-prettier": "5.2.6",
     "husky": "9.1.7",
-    "lint-staged": "15.5.0",
+    "lint-staged": "15.5.1",
     "prettier": "3.5.3",
     "serverless": "3.40.0",
     "serverless-esbuild": "1.55.0",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "3.777.0",
