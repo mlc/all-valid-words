@@ -14,14 +14,14 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@tsconfig/node22": "22.0.2",
-    "@types/aws-lambda": "8.10.156",
+    "@tsconfig/node22": "22.0.5",
+    "@types/aws-lambda": "8.10.159",
     "@types/memoizee": "0.4.12",
-    "@types/node": "22.18.11",
+    "@types/node": "22.19.5",
     "@types/wordfilter": "0.2.2",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
-    "esbuild": "0.25.11",
+    "esbuild": "0.27.2",
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "9.1.2",
@@ -29,10 +29,10 @@
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-prettier": "5.5.4",
     "husky": "9.1.7",
-    "lint-staged": "16.2.4",
-    "prettier": "3.6.2",
+    "lint-staged": "16.2.7",
+    "prettier": "3.7.4",
     "serverless": "3.40.0",
-    "serverless-esbuild": "1.55.1",
+    "serverless-esbuild": "1.57.0",
     "typescript": "5.9.3"
   },
   "dependencies": {
