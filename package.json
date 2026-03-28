@@ -33,7 +33,7 @@
     "prettier": "3.8.1",
     "serverless": "3.40.0",
     "serverless-esbuild": "1.57.0",
-    "typescript": "5.9.3"
+    "typescript": "6.0.2"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "3.981.0",
