@@ -46,5 +46,5 @@
       "eslint --ext .js,.ts"
     ]
   },
-  "packageManager": "yarn@4.13.0"
+  "packageManager": "yarn@4.14.1"
 }
