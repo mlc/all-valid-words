@@ -20,7 +20,7 @@
     "@types/wordfilter": "0.2.2",
     "esbuild": "0.28.0",
     "husky": "9.1.7",
-    "lint-staged": "16.4.0",
+    "lint-staged": "17.0.4",
     "prettier": "3.8.1",
     "serverless": "3.40.0",
     "serverless-esbuild": "1.57.0",
