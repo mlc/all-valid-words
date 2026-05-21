@@ -2328,12 +2328,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:24.12.3":
-  version: 24.12.3
-  resolution: "@types/node@npm:24.12.3"
+"@types/node@npm:*, @types/node@npm:24.12.4":
+  version: 24.12.4
+  resolution: "@types/node@npm:24.12.4"
   dependencies:
     undici-types: "npm:~7.16.0"
-  checksum: 10c0/e9db4194a0043c07e8c84c9e3ad19e4a216c708818de75ecfca858edb30d4f9f7ef1cb854959af552896eaf69ff79ea3d6e63157a6d37b0e1b809fac1c538e55
+  checksum: 10c0/d2c36b78b6050d8677769fa05a32243061675e81ddc2bb43955d91a671af3465506ef2731a24c0c9ab42b6b679bd5c1513de45bbe9ea278c2c07ee63b564b61b
   languageName: node
   linkType: hard
 
@@ -2458,15 +2458,15 @@ __metadata:
     "@tsconfig/node24": "npm:24.0.4"
     "@types/aws-lambda": "npm:8.10.161"
     "@types/memoizee": "npm:0.4.12"
-    "@types/node": "npm:24.12.3"
+    "@types/node": "npm:24.12.4"
     "@types/wordfilter": "npm:0.2.2"
     esbuild: "npm:0.28.0"
     husky: "npm:9.1.7"
-    lint-staged: "npm:17.0.4"
+    lint-staged: "npm:17.0.5"
     memoizee: "npm:0.4.17"
     prettier: "npm:3.8.3"
     serverless: "npm:3.40.0"
-    serverless-esbuild: "npm:1.57.1"
+    serverless-esbuild: "npm:1.57.2"
     tslib: "npm:2.8.1"
     typescript: "npm:6.0.3"
     wordfilter: "npm:0.2.6"
@@ -4985,9 +4985,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:17.0.4":
-  version: 17.0.4
-  resolution: "lint-staged@npm:17.0.4"
+"lint-staged@npm:17.0.5":
+  version: 17.0.5
+  resolution: "lint-staged@npm:17.0.5"
   dependencies:
     listr2: "npm:^10.2.1"
     picomatch: "npm:^4.0.4"
@@ -4999,7 +4999,7 @@ __metadata:
       optional: true
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10c0/7a1057eb3dff21236e3efcf199241282488d7cb875caabe3d0cd0cc21886b726a8dad65214f9e509b6f722630be6d5b7eace84c016fac35ecb6e2350843c738d
+  checksum: 10c0/6ecf2024744147ea768dbd550c0c47f04b295f07d30e5ecb5e375c18d8fc24d4bfa897042f4aabd7c3510054ad5bbbb51fa36e60e8dca853e31f9876ef9a3726
   languageName: node
   linkType: hard
 
@@ -6237,9 +6237,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-esbuild@npm:1.57.1":
-  version: 1.57.1
-  resolution: "serverless-esbuild@npm:1.57.1"
+"serverless-esbuild@npm:1.57.2":
+  version: 1.57.2
+  resolution: "serverless-esbuild@npm:1.57.2"
   dependencies:
     "@effect/platform": "npm:^0.65.5"
     "@effect/platform-node": "npm:^0.60.5"
@@ -6263,7 +6263,7 @@ __metadata:
   peerDependenciesMeta:
     esbuild-node-externals:
       optional: true
-  checksum: 10c0/379fdf2860b2b9fb94196bd13b66e846f23d11205932ca0696a55b15bd6ac3dde97445de67fe529692c2c7f7e23aa2ab53e52f0b13177d2badcf879197daa329
+  checksum: 10c0/cc28d345723cae992f4a5db745cb6592134deb45e2141577bd05481d7072c2692b5a914aee4d66ca0171d3ea0752732b043a732522bac5487d8508860f240f55
   languageName: node
   linkType: hard
 
