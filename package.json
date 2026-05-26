@@ -16,22 +16,22 @@
     "@tsconfig/node24": "24.0.4",
     "@types/aws-lambda": "8.10.161",
     "@types/memoizee": "0.4.12",
-    "@types/node": "24.12.3",
+    "@types/node": "24.12.4",
     "@types/wordfilter": "0.2.2",
     "esbuild": "0.28.0",
     "husky": "9.1.7",
-    "lint-staged": "17.0.4",
+    "lint-staged": "17.0.5",
     "prettier": "3.8.3",
     "serverless": "3.40.0",
-    "serverless-esbuild": "1.57.1",
+    "serverless-esbuild": "1.57.2",
     "typescript": "6.0.3"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "3.1045.0",
-    "@aws-sdk/client-dynamodb": "3.1045.0",
-    "@aws-sdk/client-s3": "3.1045.0",
-    "@aws-sdk/client-sqs": "3.1045.0",
-    "@aws-sdk/client-ssm": "3.1045.0",
+    "@aws-sdk/client-cloudformation": "3.1053.0",
+    "@aws-sdk/client-dynamodb": "3.1053.0",
+    "@aws-sdk/client-s3": "3.1053.0",
+    "@aws-sdk/client-sqs": "3.1053.0",
+    "@aws-sdk/client-ssm": "3.1053.0",
     "@aws-sdk/util-dynamodb": "3.996.2",
     "@js-joda/core": "6.0.1",
     "memoizee": "0.4.17",
@@ -46,5 +46,5 @@
       "eslint --ext .js,.ts"
     ]
   },
-  "packageManager": "yarn@4.14.1"
+  "packageManager": "yarn@4.15.0"
 }
