@@ -1405,10 +1405,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node24@npm:24.0.4":
-  version: 24.0.4
-  resolution: "@tsconfig/node24@npm:24.0.4"
-  checksum: 10c0/9c5d4173204c6935c45d3ff0584fd423bd7d8bc3f6b246e646320ae584e4226b34ea1c66ec67cd16769c73e7e80f4cc562287b0acaa4ec81aa482463972ff83f
+"@tsconfig/node26@npm:26.0.0":
+  version: 26.0.0
+  resolution: "@tsconfig/node26@npm:26.0.0"
+  checksum: 10c0/ac63ed4711b2b809957e45a97524bff2960a9662292caad253ec5577eb1ea35d3793a8b85ba6d308c5d6b21c117c7ab81c65cdf409ca0f6891129b73f3d10a66
   languageName: node
   linkType: hard
 
@@ -1588,7 +1588,7 @@ __metadata:
     "@aws-sdk/client-ssm": "npm:3.1053.0"
     "@aws-sdk/util-dynamodb": "npm:3.996.2"
     "@js-joda/core": "npm:6.0.1"
-    "@tsconfig/node24": "npm:24.0.4"
+    "@tsconfig/node26": "npm:26.0.0"
     "@types/aws-lambda": "npm:8.10.161"
     "@types/memoizee": "npm:0.4.12"
     "@types/node": "npm:24.12.4"

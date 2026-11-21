@@ -13,7 +13,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@tsconfig/node24": "24.0.4",
+    "@tsconfig/node26": "26.0.0",
     "@types/aws-lambda": "8.10.161",
     "@types/memoizee": "0.4.12",
     "@types/node": "24.12.4",
